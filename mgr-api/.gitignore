@@ -1,0 +1,36 @@
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+*.log
+
+### NetBeans ###
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# project ignore
+source/mgr-api/application-production.properties
+source/mgr-api/deploy_ec2.sh
+source/mgr-api/execute_jar_on_vm.sh
+source/mgr-api/target
+source/mgr-api/logs
+source/mgr-api/.idea
+source/mgr-api/*.iml
+dev-ops/*.env

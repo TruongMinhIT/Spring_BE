@@ -1,0 +1,19 @@
+Note for dev ops
+Build: mvn clean package -Dmaven.test.skip
+
+CREATE DATABASE `db_mgr`CHARACTER SET utf8;
+CREATE USER 'db_mgr_usr' IDENTIFIED BY 'db_mgr_usr@123';
+CREATE USER 'db_mgr_usr'@'localhost' IDENTIFIED BY 'db_mgr_usr@123';
+
+GRANT ALL PRIVILEGES ON db_mgr.* TO 'db_mgr_usr';
+FLUSH PRIVILEGES;
+
+/--------------------------------------------------------------------------------------/
+- dump all data, structure, foreign ket from db
+mvn liquibase:generateChangeLog -Dliquibase.diffTypes=tables,views,columns,indexes,foreignkeys,primarykeys,uniqueconstraints,data
+
+/----------------------------------------------------------------------------------------/
+- Create diff from production env
+mvn liquibase:diff -Pprod
+- Create diff from dev env
+mvn liquibase:diff -Pdev = mvn liquibase:diff

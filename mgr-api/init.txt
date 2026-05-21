@@ -1,0 +1,6 @@
+CREATE DATABASE `db_mgr`CHARACTER SET utf8;
+CREATE USER 'db_mgr_usr' IDENTIFIED BY 'db_mgr_usr@123';
+CREATE USER 'db_mgr_usr'@'localhost' IDENTIFIED BY 'db_mgr_usr@123';
+
+GRANT ALL PRIVILEGES ON db_mgr.* TO 'db_mgr_usr';
+FLUSH PRIVILEGES;
