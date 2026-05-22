@@ -39,4 +39,9 @@ public class ErrorCode {
      */
     public static final String CATEGORY_ERROR_NOT_FOUND = "ERROR-GROUP-0000";
     public static final String CATEGORY_ERROR_NAME_EXISTED = "ERROR-GROUP-0001";
+
+    /**
+     * User
+     */
+    public static final String USER_ERROR_NOT_FOUND = "ERROR-GROUP-0000";
 }
