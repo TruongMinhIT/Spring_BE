@@ -33,4 +33,10 @@ public class ErrorCode {
      */
     public static final String GROUP_ERROR_NOT_FOUND = "ERROR-GROUP-0000";
     public static final String GROUP_ERROR_NAME_EXISTED = "ERROR-GROUP-0001";
+
+    /**
+     * Category
+     */
+    public static final String CATEGORY_ERROR_NOT_FOUND = "ERROR-GROUP-0000";
+    public static final String CATEGORY_ERROR_NAME_EXISTED = "ERROR-GROUP-0001";
 }
