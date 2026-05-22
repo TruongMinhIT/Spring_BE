@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <changeSet author="NGUYEN TRUONG MINH" id="create-table-category">
+    <changeSet author="Authentication" id="1779432364515-1">
         <createTable tableName="db_mgr_category">
             <column name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="db_mgr_categoryPK"/>
@@ -24,11 +24,11 @@
             <column name="name" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="NGUYEN TRUONG MINH" id="unique-name-category">
+    <changeSet author="Authentication" id="1779432364515-2">
         <addUniqueConstraint columnNames="name" constraintName="UC_DB_MGR_CATEGORYNAME_COL" tableName="db_mgr_category"/>
     </changeSet>
 
-    <changeSet author="Minh" id="1767890414288-1">
+    <changeSet author="Authentication" id="1779432364515-3">
         <insert tableName="db_mgr_permission">
             <column name="id" valueNumeric="9200000000000001"/>
             <column name="name" value="Create Category"/>
@@ -105,7 +105,7 @@
         </insert>
     </changeSet>
 
-    <changeSet author="Minh" id="1767890414288-2">
+    <changeSet author="Authentication" id="1779432364515-4">
         <insert tableName="db_mgr_permission_group">
             <column name="group_id" valueNumeric="1"/>
             <column name="permission_id" valueNumeric="9200000000000001"/>

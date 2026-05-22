@@ -17,8 +17,12 @@ public interface CategoryMapper {
     @Named("fromCreateCategoryFormToEntity")
     Category fromCreateCategoryFormToEntity(CreateCategoryForm createCategoryForm);
 
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "description", target = "description")
+    @Mapping(source = "status", target = "status")
+    @Mapping(source = "createdDate", target = "createdDate")
+    @Mapping(source = "modifiedDate", target = "modifiedDate")
     @BeanMapping(ignoreByDefault = true)
     @Named("fromCategoryToDto")
     CategoryDto fromCategoryToDto(Category category);

@@ -39,7 +39,7 @@
                 <changelog.dir>${basedir}/src/main/resources/liquibase/dev</changelog.dir>
                 <db.url>jdbc:mysql://localhost:3306/db_mgr</db.url>
                 <db.username>root</db.username>
-                <db.password>12345</db.password>
+                <db.password>root</db.password>
                 <package.model>com.mgr.api.model</package.model>
                 <package.repository>com.mgr.api.repository</package.repository>
             </properties>
