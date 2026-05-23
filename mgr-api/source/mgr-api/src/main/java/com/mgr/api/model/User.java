@@ -15,17 +15,14 @@ import java.util.Date;
 @Getter
 @Setter
 public class User extends Auditable<String>{
-
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId
     @JoinColumn(name = "id")
     private Account account;
 
     @Column(name = "gender")
-    @ValidGender
     private Integer gender;
 
     @Column(name = "birth_day")
     private Date dateOfBirth;
-
 }

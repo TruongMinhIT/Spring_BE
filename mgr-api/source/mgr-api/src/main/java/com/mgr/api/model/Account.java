@@ -43,6 +43,4 @@ public class Account extends Auditable<String> {
     private Integer attemptLogin;
     @Column(name = "is_super_admin")
     private Boolean isSuperAdmin = false;
-    @OneToOne(mappedBy = "account",cascade = CascadeType.ALL)
-    private User user;
 }

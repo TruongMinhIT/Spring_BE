@@ -1,5 +1,6 @@
 package com.mgr.api.validation;
 
+import com.mgr.api.constant.MgrConstant;
 import com.mgr.api.validation.impl.GenderValidator;
 
 import javax.validation.Constraint;
@@ -14,7 +15,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = GenderValidator.class)
 public @interface ValidGender {
 
-    int [] anyOf() default {1, 2, 3};
+    int [] anyOf() default {MgrConstant.GENDER_MALE, MgrConstant.GENDER_FEMALE, MgrConstant.GENDER_OTHER};
 
     boolean allowNull() default false;
 

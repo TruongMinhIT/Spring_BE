@@ -43,5 +43,6 @@ public class ErrorCode {
     /**
      * User
      */
-    public static final String USER_ERROR_NOT_FOUND = "ERROR-GROUP-0000";
+    public static final String USER_ERROR_NOT_FOUND = "ERROR-USER-0000";
+    public static final String USER_ERROR_UNABLE_UPDATE = "ERROR-USER-0001";
 }

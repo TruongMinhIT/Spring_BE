@@ -9,7 +9,8 @@ import java.util.List;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        uses={AccountMapper.class})
 public interface UserMapper {
 
     @Mapping(source = "gender", target = "gender")
@@ -22,11 +23,14 @@ public interface UserMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "gender", target = "gender")
     @Mapping(source = "dateOfBirth", target = "dateOfBirth")
-    @Mapping(source = "account.id", target = "accountId")
+    @Mapping(source = "account", target = "account", qualifiedByName = "fromAccountToDto")
     @Mapping(source = "status", target = "status")
     @Mapping(source = "createdDate", target = "createdDate")
     @Mapping(source = "modifiedDate", target = "modifiedDate")
     @BeanMapping(ignoreByDefault = true)
     @Named("fromUserToDto")
     UserDto fromUserToDto (User user);
+
+    @IterableMapping(elementTargetType = UserDto.class)
+    List<UserDto> fromEntityToUserDtoList(List<User> users);
 }
