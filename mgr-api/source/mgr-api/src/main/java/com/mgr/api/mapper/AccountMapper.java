@@ -4,6 +4,7 @@ import com.mgr.api.dto.account.AccountAutoCompleteDto;
 import com.mgr.api.dto.account.AccountDto;
 import com.mgr.api.form.account.CreateAccountAdminForm;
 import com.mgr.api.form.account.UpdateAccountAdminForm;
+import com.mgr.api.form.user.CreateUserForm;
 import com.mgr.api.model.Account;
 import org.mapstruct.*;
 
@@ -46,4 +47,15 @@ public interface AccountMapper {
     @IterableMapping(elementTargetType = AccountDto.class, qualifiedByName = "fromAccountToDto")
     @Named("fromEntityToAccountDtoList")
     List<AccountDto> fromEntityToAccountDtoList(List<Account> accounts);
+
+    @Mapping(source = "username", target = "username")
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "kind", ignore = true)
+    @Mapping(target = "group", ignore = true)
+    @Mapping(source = "fullName", target = "fullName")
+    @Mapping(source = "email", target = "email")
+    @Mapping(source = "avatarPath", target = "avatarPath")
+    @Mapping(source = "phone", target = "phone")
+    @Mapping(source = "status", target = "status")
+    Account fromCreateUserFormToAccount (CreateUserForm createUserForm);
 }

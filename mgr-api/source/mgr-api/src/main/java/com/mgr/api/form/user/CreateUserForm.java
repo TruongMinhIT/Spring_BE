@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 @ApiModel
 public class CreateUserForm {
-    @NotEmpty(message = "username can not bt empty")
+    @NotEmpty(message = "username can not empty")
     @ApiModelProperty(name = "username", required = true)
     private String username;
 

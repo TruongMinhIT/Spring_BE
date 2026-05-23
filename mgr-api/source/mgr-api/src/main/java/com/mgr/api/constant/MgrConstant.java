@@ -7,6 +7,8 @@ public class MgrConstant {
     public static final Integer USER_KIND_ADMIN = 1;
     public static final Integer USER_KIND_USER = 2;
 
+    public static final Integer GROUP_KIND_USER = 2;
+
     public static final Integer STATUS_ACTIVE = 1;
     public static final Integer STATUS_PENDING = 0;
     public static final Integer STATUS_LOCK = -1;

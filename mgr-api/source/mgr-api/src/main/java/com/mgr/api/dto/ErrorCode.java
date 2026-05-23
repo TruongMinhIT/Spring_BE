@@ -15,6 +15,8 @@ public class ErrorCode {
     public static final String ACCOUNT_ERROR_UNABLE_CREATE = "ERROR-ACCOUNT-0003";
     public static final String ACCOUNT_ERROR_UNABLE_UPDATE = "ERROR-ACCOUNT-0004";
     public static final String ACCOUNT_ERROR_UNABLE_DELETE = "ERROR-ACCOUNT-0005";
+    public static final String ACCOUNT_ERROR_EMAIL_EXISTED = "ERROR-ACCOUNT-0001";
+    public static final String ACCOUNT_ERROR_PHONE_EXISTED = "ERROR-ACCOUNT-0001";
 
     /**
      * Starting error code DATABASE_ERROR
@@ -45,4 +47,6 @@ public class ErrorCode {
      */
     public static final String USER_ERROR_NOT_FOUND = "ERROR-USER-0000";
     public static final String USER_ERROR_UNABLE_UPDATE = "ERROR-USER-0001";
+    public static final String USER_ERROR_UNABLE_CREATE= "ERROR-USER-0002";
+
 }

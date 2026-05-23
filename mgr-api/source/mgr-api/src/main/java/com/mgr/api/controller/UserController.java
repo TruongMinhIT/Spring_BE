@@ -2,15 +2,14 @@ package com.mgr.api.controller;
 
 import com.mgr.api.constant.MgrConstant;
 import com.mgr.api.dto.ApiMessageDto;
-import com.mgr.api.dto.ApiResponse;
 import com.mgr.api.dto.ErrorCode;
 import com.mgr.api.dto.ResponseListDto;
-import com.mgr.api.dto.account.AccountDto;
 import com.mgr.api.dto.user.UserDto;
 import com.mgr.api.exception.BadRequestException;
 import com.mgr.api.exception.NotFoundException;
 import com.mgr.api.form.user.CreateUserForm;
 import com.mgr.api.form.user.UpdateUserForm;
+import com.mgr.api.mapper.AccountMapper;
 import com.mgr.api.mapper.UserMapper;
 import com.mgr.api.model.Account;
 import com.mgr.api.model.Group;
@@ -53,84 +52,85 @@ public class UserController extends ABasicController{
 
     @Autowired
     private GroupRepository groupRepository;
+
     @Autowired
     private MgrApiService mgrApiService;
+
+    @Autowired
+    private AccountMapper accountMapper;
 
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USE_V')")
     public ApiMessageDto<UserDto> getUser(@PathVariable("id") Long id){
-        ApiMessageDto<UserDto> apiMessageDto = new ApiMessageDto<>();
         User user = userRepository.findById(id).orElse(null);
         if (user == null){
             throw new NotFoundException("User not found", ErrorCode.USER_ERROR_NOT_FOUND);
         }
-        apiMessageDto.setData(userMapper.fromUserToDto(user));
-        apiMessageDto.setMessage("Get user succes");
-        return apiMessageDto;
+        return makeSuccessResponse(userMapper.fromUserToDto(user), "Get user succes");
     }
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USE_C')")
     public ApiMessageDto<String> createUser(@Valid @RequestBody CreateUserForm createUserForm, BindingResult bindingResult){
-        ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
-        Account existAccount = accountRepository.findFirstByUsername(createUserForm.getUsername()).orElse(null);
-        if(existAccount != null){
+        if(accountRepository.findFirstByUsername(createUserForm.getUsername()).isPresent()){
             throw new BadRequestException("Username is existed", ErrorCode.ACCOUNT_ERROR_USERNAME_EXISTED);
         }
-        Group group = groupRepository.findById(createUserForm.getGroupId()).orElse(null);
-        if(group == null){
-            throw new NotFoundException("Group not found", ErrorCode.GROUP_ERROR_NOT_FOUND);
+        if(accountRepository.findFirstByEmail(createUserForm.getEmail()).isPresent()){
+            throw new BadRequestException("Email is existed", ErrorCode.ACCOUNT_ERROR_EMAIL_EXISTED);
         }
-        Account account = new Account();
-        account.setUsername(createUserForm.getUsername());
+        if(accountRepository.findFirstByPhone(createUserForm.getPhone()).isPresent()){
+            throw new BadRequestException("Phone is existed", ErrorCode.ACCOUNT_ERROR_PHONE_EXISTED);
+        }
+        Group group = groupRepository.findById(createUserForm.getGroupId())
+                .orElseThrow(()->new NotFoundException("Group not found", ErrorCode.GROUP_ERROR_NOT_FOUND));
+        if(!group.getKind().equals(MgrConstant.GROUP_KIND_USER)){
+            throw new BadRequestException("Group not for user", ErrorCode.USER_ERROR_UNABLE_CREATE);
+        }
+
+        Account account = accountMapper.fromCreateUserFormToAccount(createUserForm);
         account.setPassword(passwordEncoder.encode(createUserForm.getPassword()));
-        account.setFullName(createUserForm.getFullName());
         account.setKind(MgrConstant.USER_KIND_USER);
-        account.setEmail(createUserForm.getEmail());
-        account.setPhone(createUserForm.getPhone());
-        account.setStatus(createUserForm.getStatus());
         account.setGroup(group);
-        if(StringUtils.isNoneBlank(createUserForm.getAvatarPath())){
-            account.setAvatarPath(createUserForm.getAvatarPath());
-        }
 
         User user = userMapper.fromCreateUserFormToEntity(createUserForm);
         user.setAccount(account);
         userRepository.save(user);
-        apiMessageDto.setMessage("Create User success");
-        return apiMessageDto;
+        return makeSuccessResponse("Create User success");
     }
 
     @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USE_U')")
     public ApiMessageDto<String> updateProfile(@Valid @RequestBody UpdateUserForm updateUserForm, BindingResult bindingResult){
-        ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
-        User user = userRepository.findById(updateUserForm.getId()).orElse(null);
-        if (user == null){
-            throw new NotFoundException("User not found", ErrorCode.USER_ERROR_NOT_FOUND);
-        }
+        User user = userRepository.findById(updateUserForm.getId())
+                .orElseThrow(()-> new NotFoundException("User not found", ErrorCode.USER_ERROR_NOT_FOUND));
+
         Account account = user.getAccount();
         if (updateUserForm.getGroupId()!=null){
             if (!isSuperAdmin()){
                 throw new BadRequestException("Can not update Group without superadmin", ErrorCode.USER_ERROR_UNABLE_UPDATE);
             }
-            Group group = groupRepository.findById(updateUserForm.getGroupId()).orElse(null);
-            if (group == null){
-                throw new NotFoundException("Group not found!", ErrorCode.GROUP_ERROR_NOT_FOUND);
-            }
+            Group group = groupRepository.findById(updateUserForm.getGroupId())
+                    .orElseThrow(()->new NotFoundException("Group not found!", ErrorCode.GROUP_ERROR_NOT_FOUND));
             account.setGroup(group);
         }
+        if (StringUtils.isNoneBlank(updateUserForm.getEmail()) && !updateUserForm.getEmail().equals(account.getEmail())){
+            if (accountRepository.existsByEmailAndIdNot(updateUserForm.getEmail(), updateUserForm.getId())){
+                throw new BadRequestException("Email already taken", ErrorCode.ACCOUNT_ERROR_EMAIL_EXISTED);
+            }
+            account.setEmail(updateUserForm.getEmail());
+        }
+        if (StringUtils.isNoneBlank(updateUserForm.getPhone()) && !updateUserForm.getPhone().equals(account.getPhone())){
+            if (accountRepository.existsByPhoneAndIdNot(updateUserForm.getPhone(), updateUserForm.getId())){
+                throw new BadRequestException("Phone already taken", ErrorCode.ACCOUNT_ERROR_PHONE_EXISTED);
+            }
+            account.setPhone(updateUserForm.getPhone());
+        }
+
         if (StringUtils.isNoneBlank(updateUserForm.getPassword())){
             account.setPassword(passwordEncoder.encode(updateUserForm.getPassword()));
         }
         if (StringUtils.isNoneBlank(updateUserForm.getFullName())){
             account.setFullName(updateUserForm.getFullName());
-        }
-        if (updateUserForm.getEmail()!=null){
-            account.setEmail(updateUserForm.getEmail().trim());
-        }
-        if (updateUserForm.getPhone()!=null){
-            account.setPhone(updateUserForm.getPhone().trim());
         }
         if (updateUserForm.getStatus() != null) {
             account.setStatus(updateUserForm.getStatus());
@@ -149,29 +149,24 @@ public class UserController extends ABasicController{
             user.setDateOfBirth(updateUserForm.getDateOfBirth());
         }
         userRepository.save(user);
-        apiMessageDto.setMessage("Update user success");
-        return apiMessageDto;
+        return makeSuccessResponse("Update user success");
     }
 
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USE_L')")
     public ApiMessageDto<ResponseListDto<UserDto>> listUser(UserCriteria userCriteria, Pageable pageable){
-        ApiMessageDto<ResponseListDto<UserDto>> apiMessageDto = new ApiMessageDto<>();
         Page<User> page = userRepository.findAll(userCriteria.getSpecification(), pageable);
-        ResponseListDto<UserDto> responseListDto = new ResponseListDto(userMapper.fromEntityToUserDtoList(page.getContent()), page.getTotalElements(), page.getTotalPages());
-        apiMessageDto.setData(responseListDto);
-        apiMessageDto.setMessage("List account success.");
-        return apiMessageDto;
+        ResponseListDto<UserDto> responseListDto = new ResponseListDto(userMapper.fromEntityToUserDtoList(page.getContent()),
+                                                                                    page.getTotalElements(), page.getTotalPages());
+        return makeSuccessResponse(responseListDto,"List account success");
     }
 
     @Transactional
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USE_D')")
     public ApiMessageDto<String> delete(@PathVariable("id") Long id) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user == null) {
-            throw new NotFoundException("User not found!", ErrorCode.USER_ERROR_NOT_FOUND);
-        }
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found", ErrorCode.USER_ERROR_NOT_FOUND));
         String avatarPath = user.getAccount().getAvatarPath();
         if(StringUtils.isNoneBlank(avatarPath)){
             mgrApiService.deleteFile(avatarPath);
