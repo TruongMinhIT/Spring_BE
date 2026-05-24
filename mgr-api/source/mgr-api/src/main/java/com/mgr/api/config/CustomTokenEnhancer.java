@@ -30,13 +30,15 @@ public class CustomTokenEnhancer implements TokenEnhancer {
     @Override
     public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
         Map<String, Object> additionalInfo;
-        String grantType = authentication.getOAuth2Request().getRequestParameters().get("grant_type");
+        Map<String, String> requestParams = authentication.getOAuth2Request().getRequestParameters();
+        String grantType = requestParams.get("grant_type");
         String username = authentication.getName();
+        String email = requestParams.get("email");
         if (SecurityConstant.GRANT_TYPE_PASSWORD.equals(grantType)) {
             additionalInfo = getAdditionalInfo(null, username, grantType, null);
-        }else if(SecurityConstant.GRANT_TYPE_USER.equals(grantType)){
-            additionalInfo = getAdditionalInfoUser(null, username, grantType, null);
-        }else {
+        } else if (SecurityConstant.GRANT_TYPE_USER.equals(grantType)) {
+            additionalInfo = getAdditionalInfoUser(null, email, grantType, null);
+        } else {
             additionalInfo = getAdditionalInfoCustom(null, username, grantType, null);
         }
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo); //Lấy chỗi đã nén gán
@@ -115,9 +117,9 @@ public class CustomTokenEnhancer implements TokenEnhancer {
         return additionalInfo;
     }
 
-    private Map<String, Object> getAdditionalInfoUser(String tenantName, String username, String grantType, Long userId) {
+    private Map<String, Object> getAdditionalInfoUser(String tenantName, String email, String grantType, Long userId) {
         Map<String, Object> additionalInfo = new HashMap<>();
-        AccountForTokenDto a = getAccountByUsername(username);
+        AccountForTokenDto a = getAccountByEmail(email);
 
         if (a != null) {
             Long accountId = a.getId();
@@ -141,7 +143,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
                     + permission + DELIM
                     + deviceId + DELIM
                     + userKind + DELIM
-                    + username + DELIM
+                    + a.getUsername() + DELIM
                     + tabletKind + DELIM
                     + orderId + DELIM
                     + isSuperAdmin + DELIM
@@ -154,9 +156,23 @@ public class CustomTokenEnhancer implements TokenEnhancer {
     public AccountForTokenDto getAccountByUsername(String username) {
         try {
             String query = "SELECT id, kind, username, email, full_name, is_super_admin " +
-                    "FROM " + TablePrefix.PREFIX_TABLE + "account WHERE (username = ? OR phone = ? OR email =?) and status = 1 limit 1";
+                    "FROM " + TablePrefix.PREFIX_TABLE + "account WHERE (username = ? OR phone = ?) and status = 1 limit 1";
             log.debug(query);
-            List<AccountForTokenDto> dto = jdbcTemplate.query(query, new Object[]{username, username, username}, new BeanPropertyRowMapper<>(AccountForTokenDto.class));
+            List<AccountForTokenDto> dto = jdbcTemplate.query(query, new Object[]{username, username}, new BeanPropertyRowMapper<>(AccountForTokenDto.class));
+            if (!dto.isEmpty()) return dto.get(0);
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public AccountForTokenDto getAccountByEmail(String email) {
+        try {
+            String query = "SELECT id, kind, username, email, full_name, is_super_admin " +
+                    "FROM " + TablePrefix.PREFIX_TABLE + "account WHERE email = ?  and status = 1 limit 1";
+            log.debug(query);
+            List<AccountForTokenDto> dto = jdbcTemplate.query(query, new Object[]{email}, new BeanPropertyRowMapper<>(AccountForTokenDto.class));
             if (!dto.isEmpty()) return dto.get(0);
             return null;
         } catch (Exception e) {

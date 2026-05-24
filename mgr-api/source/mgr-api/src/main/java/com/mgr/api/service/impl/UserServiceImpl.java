@@ -114,6 +114,7 @@ public class UserServiceImpl implements UserDetailsService {
         Map<String, String> requestParameters = new HashMap<>();
         requestParameters.put("grant_type", grantType);
         requestParameters.put("tenantId", tenant);
+        requestParameters.put("email", email);
         String clientId = client.getClientId();
         boolean approved = true;
         Set<String> responseTypes = new HashSet<>();
