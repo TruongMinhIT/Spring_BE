@@ -1,7 +1,9 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <include file="db.changelog-1.0.0.xml" relativeToChangelogFile="true"/>
-    <include file="20260522090232_changelog.xml" relativeToChangelogFile="true"/>
-    <include file="20260523070904_changelog.xml" relativeToChangelogFile="true"/>
-    <include file="20260524022118_changelog.xml" relativeToChangelogFile="true"/>
+    <changeSet author="Authentication" id="1779589290481-1">
+        <update tableName="oauth_client_details">
+            <column name="authorized_grant_types" value="password,refresh_token,custom,user"/>
+            <where>client_id = 'abc_client'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
