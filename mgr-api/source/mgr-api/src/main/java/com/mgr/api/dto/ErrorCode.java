@@ -49,4 +49,11 @@ public class ErrorCode {
     public static final String USER_ERROR_UNABLE_UPDATE = "ERROR-USER-0001";
     public static final String USER_ERROR_UNABLE_CREATE= "ERROR-USER-0002";
 
+    /**
+     * News
+     */
+    public static final String NEWS_ERROR_NOT_FOUND = "ERROR-NEWS-0000";
+    public static final String NEWS_ERROR_UNABLE_UPDATE = "ERROR-NEWS-0001";
+    public static final String NEWS_ERROR_UNABLE_DELETE= "ERROR-NEWS-0002";
+
 }

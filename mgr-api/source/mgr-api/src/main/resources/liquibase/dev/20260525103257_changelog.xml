@@ -1,0 +1,212 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="Authentication" id="1779705189625-1">
+        <createTable tableName="db_mgr_news">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_mgr_newsPK"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="thumbnail_url" type="VARCHAR(255)"/>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="category_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1779705189625-2">
+        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="db_mgr_news" constraintName="FKm9py68edyi0v1cy4dd7xtqxro" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_mgr_category" validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1779705189625-3">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="db_mgr_news" constraintName="FKnchc9m5n6xkj83v0pg7534a11" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_mgr_user" validate="true"/>
+    </changeSet>
+
+    <changeSet author="Authentication" id="1779705189625-4">
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="7300000000000001"/>
+            <column name="name" value="Create news"/>
+            <column name="action" value="/v1/news/create"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="Create News"/>
+            <column name="name_group" value="News"/>
+            <column name="permission_code" value="NEW_C"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-05-25T17:30:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-05-25T17:30:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="7300000000000002"/>
+            <column name="name" value="View news"/>
+            <column name="action" value="/v1/news/get/{id}"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="Get news"/>
+            <column name="name_group" value="News"/>
+            <column name="permission_code" value="NEW_V"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-05-25T17:30:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-05-25T17:30:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="7300000000000003"/>
+            <column name="name" value="Update news"/>
+            <column name="action" value="/v1/news/update"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="Update news"/>
+            <column name="name_group" value="News"/>
+            <column name="permission_code" value="NEW_U"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-05-25T17:30:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-05-25T17:30:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="7300000000000004"/>
+            <column name="name" value="List news"/>
+            <column name="action" value="/v1/news/list"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="List news"/>
+            <column name="name_group" value="News"/>
+            <column name="permission_code" value="NEW_L"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-05-25T17:30:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-05-25T17:30:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="7300000000000005"/>
+            <column name="name" value="Delete News"/>
+            <column name="action" value="/v1/news/delete/{id}"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="Delete News"/>
+            <column name="name_group" value="News"/>
+            <column name="permission_code" value="NEW_D"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-05-25T17:30:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-05-25T17:30:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Authentication" id="1779705189625-5">
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="7300000000000001"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="7300000000000002"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="7300000000000003"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="7300000000000004"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="7300000000000005"/>
+        </insert>
+
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="7300000000000001"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="7300000000000002"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="7300000000000003"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="7300000000000004"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="7300000000000005"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="3"/>
+            <column name="permission_id" valueNumeric="7300000000000001"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="3"/>
+            <column name="permission_id" valueNumeric="7300000000000002"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="3"/>
+            <column name="permission_id" valueNumeric="7300000000000003"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="3"/>
+            <column name="permission_id" valueNumeric="7300000000000004"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="3"/>
+            <column name="permission_id" valueNumeric="7300000000000005"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Authentication" id="1779705189625-6">
+    <insert tableName="db_mgr_permission">
+        <column name="id" valueNumeric="7200000000000006"/>
+        <column name="name" value="Profile User"/>
+        <column name="action" value="/v1/users/profile"/>
+        <column name="show_menu" valueBoolean="false"/>
+        <column name="description" value="Profile"/>
+        <column name="name_group" value="User"/>
+        <column name="permission_code" value="USE_P"/>
+        <column name="created_by" value="admin"/>
+        <column name="created_date" valueDate="2026-05-25T17:30:00"/>
+        <column name="modified_by" value="admin"/>
+        <column name="modified_date" valueDate="2026-05-25T17:30:00"/>
+        <column name="status" valueNumeric="1"/>
+    </insert>
+    </changeSet>
+
+    <changeSet author="Authentication" id="1779705189625-7">
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="7200000000000006"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="7200000000000006"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="3"/>
+            <column name="permission_id" valueNumeric="7200000000000006"/>
+        </insert>
+    </changeSet>
+
+
+
+</databaseChangeLog>

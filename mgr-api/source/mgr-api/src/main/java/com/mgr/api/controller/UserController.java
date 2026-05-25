@@ -173,4 +173,14 @@ public class UserController extends ABasicController{
         }
         userRepository.delete(user);
         return makeSuccessResponse("Delete user profile success.");
-    }}
+    }
+
+    @GetMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('USE_P')")
+    public ApiMessageDto<UserDto> profile(){
+        Long currentUserId = getCurrentUser();
+        User user = userRepository.findById(currentUserId)
+                .orElseThrow(()-> new NotFoundException("User not found", ErrorCode.USER_ERROR_NOT_FOUND));
+        return makeSuccessResponse(userMapper.fromUserToDto(user), "Get profile scuccess");
+    }
+}
