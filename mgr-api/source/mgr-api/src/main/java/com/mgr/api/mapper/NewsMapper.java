@@ -26,7 +26,7 @@ public interface NewsMapper {
     @Mapping(source = "description", target = "description")
     @Mapping(source = "thumbnailUrl", target = "thumbnailUrl")
     @Mapping(source = "category", target = "category", qualifiedByName = "fromCategoryToDto")
-    @Mapping(source = "user", target = "user", qualifiedByName = "fromUserToDto")
+    @Mapping(source = "user", target = "user", qualifiedByName = "fromUserToSimpleDto")
     @Mapping(source = "status", target = "status")
     @Mapping(source = "createdDate", target = "createdDate")
     @Mapping(source = "modifiedDate", target = "modifiedDate")
@@ -34,6 +34,6 @@ public interface NewsMapper {
     @Named("fromNewsToDto")
     NewsDto fromNewsToDto(News news);
 
-    @IterableMapping(elementTargetType = NewsDto.class)
+    @IterableMapping(elementTargetType = NewsDto.class, qualifiedByName = "fromNewsToDto")
     List<NewsDto> fromEntityToNewsDtoList(List<News> news);
 }

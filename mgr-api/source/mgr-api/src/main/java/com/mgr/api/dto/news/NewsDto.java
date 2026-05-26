@@ -3,6 +3,7 @@ package com.mgr.api.dto.news;
 import com.mgr.api.dto.ABasicAdminDto;
 import com.mgr.api.dto.category.CategoryDto;
 import com.mgr.api.dto.user.UserDto;
+import com.mgr.api.dto.user.UserSimpleDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -21,5 +22,5 @@ public class NewsDto extends ABasicAdminDto {
     @ApiModelProperty(name = "category")
     private CategoryDto category;
     @ApiModelProperty(name = "user")
-    private UserDto user;
+    private UserSimpleDto user;
 }
