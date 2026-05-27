@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class News  extends Auditable<String>{
+public class News extends Auditable<String> {
     @Column(name = "title")
     private String title;
 
@@ -32,5 +32,4 @@ public class News  extends Auditable<String>{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
-
 }

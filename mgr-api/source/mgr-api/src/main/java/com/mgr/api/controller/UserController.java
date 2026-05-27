@@ -9,6 +9,7 @@ import com.mgr.api.exception.BadRequestException;
 import com.mgr.api.exception.NotFoundException;
 import com.mgr.api.form.user.CreateUserForm;
 import com.mgr.api.form.user.UpdateUserForm;
+import com.mgr.api.form.user.UpdateUserProfileForm;
 import com.mgr.api.mapper.AccountMapper;
 import com.mgr.api.mapper.UserMapper;
 import com.mgr.api.model.Account;
@@ -100,7 +101,7 @@ public class UserController extends ABasicController{
 
     @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USE_U')")
-    public ApiMessageDto<String> updateProfile(@Valid @RequestBody UpdateUserForm updateUserForm, BindingResult bindingResult){
+    public ApiMessageDto<String> updateUser(@Valid @RequestBody UpdateUserForm updateUserForm, BindingResult bindingResult){
         User user = userRepository.findById(updateUserForm.getId())
                 .orElseThrow(()-> new NotFoundException("User not found", ErrorCode.USER_ERROR_NOT_FOUND));
 
@@ -177,10 +178,51 @@ public class UserController extends ABasicController{
 
     @GetMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USE_P')")
-    public ApiMessageDto<UserDto> profile(){
+    public ApiMessageDto<UserDto> profile() {
         Long currentUserId = getCurrentUser();
         User user = userRepository.findById(currentUserId)
-                .orElseThrow(()-> new NotFoundException("User not found", ErrorCode.USER_ERROR_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("User not found", ErrorCode.USER_ERROR_NOT_FOUND));
         return makeSuccessResponse(userMapper.fromUserToDto(user), "Get profile scuccess");
+    }
+
+    @PutMapping(value = "/update-profile", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('USE_UP')")
+    public ApiMessageDto<String> updateProfile(@Valid @RequestBody UpdateUserProfileForm updateUserProfileForm, BindingResult bindingResult) {
+        Long currentUserId = getCurrentUser();
+        User user = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new NotFoundException("User not found", ErrorCode.USER_ERROR_NOT_FOUND));
+        Account userAccount = user.getAccount();
+        if (StringUtils.isNoneBlank(updateUserProfileForm.getUsername())) {
+            if (accountRepository.existsByUsernameAndIdNot(updateUserProfileForm.getUsername(), currentUserId)) {
+                throw new BadRequestException("Username is existed", ErrorCode.ACCOUNT_ERROR_USERNAME_EXISTED);
+            }
+            userAccount.setUsername(updateUserProfileForm.getUsername());
+        }
+        if (StringUtils.isNoneBlank(updateUserProfileForm.getEmail())) {
+            if (accountRepository.existsByEmailAndIdNot(updateUserProfileForm.getEmail(), currentUserId)) {
+                throw new BadRequestException("Email is existed", ErrorCode.ACCOUNT_ERROR_EMAIL_EXISTED);
+            }
+            userAccount.setEmail(updateUserProfileForm.getEmail());
+        }
+        if (StringUtils.isNoneBlank(updateUserProfileForm.getPhone())) {
+            if (accountRepository.existsByPhoneAndIdNot(updateUserProfileForm.getPhone(), currentUserId)) {
+                throw new BadRequestException("Phone is existed", ErrorCode.ACCOUNT_ERROR_PHONE_EXISTED);
+            }
+            userAccount.setPhone(updateUserProfileForm.getPhone());
+        }
+        if (StringUtils.isNoneBlank(updateUserProfileForm.getPassword())) {
+            userAccount.setPassword(passwordEncoder.encode(updateUserProfileForm.getPassword()));
+        }
+        if (StringUtils.isNoneBlank(updateUserProfileForm.getFullName())) {
+            userAccount.setFullName(updateUserProfileForm.getFullName());
+        }
+        if (StringUtils.isNoneBlank(updateUserProfileForm.getAvatarPath())) {
+            if (userAccount.getAvatarPath() != null && !userAccount.getAvatarPath().equals(updateUserProfileForm.getAvatarPath())) {
+                mgrApiService.deleteFile(userAccount.getAvatarPath());
+            }
+            userAccount.setAvatarPath(updateUserProfileForm.getAvatarPath());
+        }
+        userRepository.save(user);
+        return makeSuccessResponse("Update profile success");
     }
 }

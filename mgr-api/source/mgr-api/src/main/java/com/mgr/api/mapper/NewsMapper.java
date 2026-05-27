@@ -9,7 +9,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        nullValuePropertyMappingStrategy= NullValuePropertyMappingStrategy.IGNORE,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {UserMapper.class, CategoryMapper.class}
 )
 public interface NewsMapper {
@@ -19,7 +19,7 @@ public interface NewsMapper {
     @Mapping(source = "thumbnailUrl", target = "thumbnailUrl")
     @BeanMapping(ignoreByDefault = true)
     @Named("fromCreateNewsFormToEntity")
-    News fromCreateNewsFormToEntity (CreateNewsForm createNewsForm);
+    News fromCreateNewsFormToEntity(CreateNewsForm createNewsForm);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "title", target = "title")

@@ -1,6 +1,5 @@
 package com.mgr.api.form.news;
 
-import com.mgr.api.model.Auditable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

@@ -54,6 +54,6 @@ public class ErrorCode {
      */
     public static final String NEWS_ERROR_NOT_FOUND = "ERROR-NEWS-0000";
     public static final String NEWS_ERROR_UNABLE_UPDATE = "ERROR-NEWS-0001";
-    public static final String NEWS_ERROR_UNABLE_DELETE= "ERROR-NEWS-0002";
+    public static final String NEWS_ERROR_UNABLE_DELETE = "ERROR-NEWS-0002";
 
 }
