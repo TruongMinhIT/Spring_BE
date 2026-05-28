@@ -82,15 +82,11 @@ public class NewsController extends ABasicController {
         if (!news.getUser().getId().equals(currentUserId)) {
             throw new BadRequestException("You don't have permission to update this news", ErrorCode.NEWS_ERROR_UNABLE_UPDATE);
         }
-        if (StringUtils.isNoneBlank(updateNewsForm.getTitle())) {
-            news.setTitle(updateNewsForm.getTitle());
-        }
-        if (StringUtils.isNoneBlank(updateNewsForm.getDescription())) {
-            news.setDescription(updateNewsForm.getDescription());
-        }
+        news.setTitle(updateNewsForm.getTitle());
+        news.setDescription(updateNewsForm.getDescription());
         if (StringUtils.isNoneBlank(updateNewsForm.getThumbnailUrl())) {
-            if (updateNewsForm.getThumbnailUrl() != null && !news.getThumbnailUrl().equals(updateNewsForm.getThumbnailUrl())) {
-                mgrApiService.deleteFile(updateNewsForm.getThumbnailUrl());
+            if (news.getThumbnailUrl() != null && !news.getThumbnailUrl().equals(updateNewsForm.getThumbnailUrl())) {
+                mgrApiService.deleteFile(news.getThumbnailUrl());
             }
             news.setThumbnailUrl(updateNewsForm.getThumbnailUrl());
         }

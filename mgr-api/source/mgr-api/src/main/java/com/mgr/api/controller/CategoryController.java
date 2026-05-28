@@ -10,8 +10,11 @@ import com.mgr.api.form.category.CreateCategoryForm;
 import com.mgr.api.form.category.UpdateCategoryForm;
 import com.mgr.api.mapper.CategoryMapper;
 import com.mgr.api.model.Category;
+import com.mgr.api.model.News;
 import com.mgr.api.model.criteria.CategoryCriteria;
 import com.mgr.api.repository.CategoryRepository;
+import com.mgr.api.repository.NewsRepository;
+import com.mgr.api.service.MgrApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,11 @@ public class CategoryController extends ABasicController{
 
     @Autowired
     CategoryMapper categoryMapper;
+
+    @Autowired
+    NewsRepository newsRepository;
+    @Autowired
+    private MgrApiService mgrApiService;
 
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('CAT_V')")
@@ -108,10 +116,19 @@ public class CategoryController extends ABasicController{
     @Transactional
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('CAT_D')")
-    public ApiMessageDto<Void> delete(@PathVariable("id") Long id){
+    public ApiMessageDto<Void> delete(@PathVariable("id") Long id) {
         Category category = categoryRepository.findById(id).orElse(null);
         if (category == null) {
             throw new NotFoundException("Category not found!", ErrorCode.CATEGORY_ERROR_NOT_FOUND);
+        }
+        List<News> newsList = newsRepository.findAllByCategoryId(id);
+        if (!newsList.isEmpty()) {
+            for (News news : newsList) {
+                if (StringUtils.isNoneBlank(news.getThumbnailUrl())) {
+                    mgrApiService.deleteFile(news.getThumbnailUrl());
+                }
+            }
+            newsRepository.deleteInBatch(newsList);
         }
         categoryRepository.deleteById(id);
         return  makeSuccessResponse("Delete Category success");

@@ -14,10 +14,12 @@ import com.mgr.api.mapper.AccountMapper;
 import com.mgr.api.mapper.UserMapper;
 import com.mgr.api.model.Account;
 import com.mgr.api.model.Group;
+import com.mgr.api.model.News;
 import com.mgr.api.model.User;
 import com.mgr.api.model.criteria.UserCriteria;
 import com.mgr.api.repository.AccountRepository;
 import com.mgr.api.repository.GroupRepository;
+import com.mgr.api.repository.NewsRepository;
 import com.mgr.api.repository.UserRepository;
 import com.mgr.api.service.MgrApiService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/users")
@@ -59,6 +63,9 @@ public class UserController extends ABasicController{
 
     @Autowired
     private AccountMapper accountMapper;
+
+    @Autowired
+    private NewsRepository newsRepository;
 
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USE_V')")
@@ -168,8 +175,17 @@ public class UserController extends ABasicController{
     public ApiMessageDto<String> delete(@PathVariable("id") Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found", ErrorCode.USER_ERROR_NOT_FOUND));
+        List<News> newsList = newsRepository.findAllByUserId(id);
+        if (!newsList.isEmpty()) {
+            for (News news : newsList) {
+                if (StringUtils.isNoneBlank(news.getThumbnailUrl())) {
+                    mgrApiService.deleteFile(news.getThumbnailUrl());
+                }
+            }
+            newsRepository.deleteInBatch(newsList);
+        }
         String avatarPath = user.getAccount().getAvatarPath();
-        if(StringUtils.isNoneBlank(avatarPath)){
+        if (StringUtils.isNoneBlank(avatarPath)) {
             mgrApiService.deleteFile(avatarPath);
         }
         userRepository.delete(user);

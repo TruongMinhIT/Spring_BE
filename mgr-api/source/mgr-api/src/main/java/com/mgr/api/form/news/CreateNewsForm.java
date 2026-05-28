@@ -4,22 +4,21 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
 @ApiModel
 public class CreateNewsForm {
-    @NotEmpty(message = "title can not empty")
+    @NotBlank(message = "title can not empty")
     @ApiModelProperty(name = "title", required = true)
     private String title;
 
-    @NotEmpty(message = "description can not empty")
+    @NotBlank(message = "description can not empty")
     @ApiModelProperty(name = "description", required = true)
     private String description;
 
-    @NotEmpty(message = "thumbNailUrl can not empty")
-    @ApiModelProperty(name = "thumbnailUrl", required = true)
+    @ApiModelProperty(name = "thumbnailUrl")
     private String thumbnailUrl;
 
     @NotNull(message = "categoryId can not null")
