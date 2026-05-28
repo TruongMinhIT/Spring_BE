@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/category")
@@ -123,11 +124,11 @@ public class CategoryController extends ABasicController{
         }
         List<News> newsList = newsRepository.findAllByCategoryId(id);
         if (!newsList.isEmpty()) {
-            for (News news : newsList) {
-                if (StringUtils.isNoneBlank(news.getThumbnailUrl())) {
-                    mgrApiService.deleteFile(news.getThumbnailUrl());
-                }
-            }
+            List<String> imageUrls = newsList.stream()
+                    .map(News::getThumbnailUrl)
+                    .filter(StringUtils::isNoneBlank)
+                    .collect(Collectors.toList());
+            mgrApiService.deleteFiles(imageUrls);
             newsRepository.deleteInBatch(newsList);
         }
         categoryRepository.deleteById(id);

@@ -1,7 +1,6 @@
 package com.mgr.api.mapper;
 
 import com.mgr.api.dto.user.UserDto;
-import com.mgr.api.dto.user.UserSimpleDto;
 import com.mgr.api.form.user.CreateUserForm;
 import com.mgr.api.model.User;
 import org.mapstruct.*;
@@ -36,9 +35,8 @@ public interface UserMapper {
     List<UserDto> fromEntityToUserDtoList(List<User> users);
 
     @Mapping(source = "id", target = "id")
-    @Mapping(source = "account.fullName", target = "fullName")
-    @Mapping(source = "account.avatarPath", target = "avatarPath")
+    @Mapping(source = "account", target = "account", qualifiedByName = "fromAccountToSimpleAccount")
     @BeanMapping(ignoreByDefault = true)
     @Named("fromUserToSimpleDto")
-    UserSimpleDto fromUserToSimpleDto(User user);
+    UserDto fromUserToSimpleDto(User user);
 }

@@ -177,11 +177,11 @@ public class UserController extends ABasicController{
                 .orElseThrow(() -> new NotFoundException("User not found", ErrorCode.USER_ERROR_NOT_FOUND));
         List<News> newsList = newsRepository.findAllByUserId(id);
         if (!newsList.isEmpty()) {
-            for (News news : newsList) {
-                if (StringUtils.isNoneBlank(news.getThumbnailUrl())) {
-                    mgrApiService.deleteFile(news.getThumbnailUrl());
-                }
-            }
+            List<String> imageUrls = newsList.stream()
+                    .map(News::getThumbnailUrl)
+                    .filter(StringUtils::isNoneBlank)
+                    .collect(Collectors.toList());
+            mgrApiService.deleteFiles(imageUrls);
             newsRepository.deleteInBatch(newsList);
         }
         String avatarPath = user.getAccount().getAvatarPath();
@@ -202,7 +202,6 @@ public class UserController extends ABasicController{
     }
 
     @PutMapping(value = "/update-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('USE_UP')")
     public ApiMessageDto<String> updateProfile(@Valid @RequestBody UpdateUserProfileForm updateUserProfileForm, BindingResult bindingResult) {
         Long currentUserId = getCurrentUser();
         User user = userRepository.findById(currentUserId)
