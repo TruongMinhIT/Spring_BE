@@ -58,4 +58,11 @@ public interface AccountMapper {
     @Mapping(source = "phone", target = "phone")
     @Mapping(source = "status", target = "status")
     Account fromCreateUserFormToAccount (CreateUserForm createUserForm);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "fullName", target = "fullName")
+    @Mapping(source = "avatarPath", target = "avatar")
+    @BeanMapping(ignoreByDefault = true)
+    @Named("fromAccountToSimpleAccount")
+    AccountDto fromAccountToSimpleAccount(Account account);
 }

@@ -33,4 +33,10 @@ public interface UserMapper {
 
     @IterableMapping(elementTargetType = UserDto.class)
     List<UserDto> fromEntityToUserDtoList(List<User> users);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "account", target = "account", qualifiedByName = "fromAccountToSimpleAccount")
+    @BeanMapping(ignoreByDefault = true)
+    @Named("fromUserToSimpleDto")
+    UserDto fromUserToSimpleDto(User user);
 }

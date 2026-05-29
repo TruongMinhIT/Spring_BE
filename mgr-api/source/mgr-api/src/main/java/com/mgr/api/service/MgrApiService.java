@@ -23,6 +23,10 @@ public class MgrApiService {
         //call to mediaService for delete
     }
 
+    public void deleteFiles(List<String> filePaths) {
+        // call to mediaService for delete
+    }
+
     public void sendEmail(String email, String msg, String subject, boolean html) {
         commonAsyncService.sendEmail(email, msg, subject, html);
     }
