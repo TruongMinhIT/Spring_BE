@@ -35,6 +35,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -175,18 +176,21 @@ public class UserController extends ABasicController{
     public ApiMessageDto<String> delete(@PathVariable("id") Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found", ErrorCode.USER_ERROR_NOT_FOUND));
-        List<News> newsList = newsRepository.findAllByUserId(id);
-        if (!newsList.isEmpty()) {
-            List<String> imageUrls = newsList.stream()
-                    .map(News::getThumbnailUrl)
-                    .filter(StringUtils::isNoneBlank)
-                    .collect(Collectors.toList());
-            mgrApiService.deleteFiles(imageUrls);
-            newsRepository.deleteInBatch(newsList);
-        }
+        List<String> filesToDelete = new ArrayList<>();
         String avatarPath = user.getAccount().getAvatarPath();
         if (StringUtils.isNoneBlank(avatarPath)) {
-            mgrApiService.deleteFile(avatarPath);
+            filesToDelete.add(avatarPath);
+        }
+        List<News> newsList = newsRepository.findAllByUserId(id);
+        if (!newsList.isEmpty()) {
+            filesToDelete.addAll(newsList.stream()
+                    .map(News::getThumbnailUrl)
+                    .filter(StringUtils::isNoneBlank)
+                    .collect(Collectors.toList()));
+            newsRepository.deleteInBatch(newsList);
+        }
+        if (!filesToDelete.isEmpty()) {
+            mgrApiService.deleteFiles(filesToDelete);
         }
         userRepository.delete(user);
         return makeSuccessResponse("Delete user profile success.");
