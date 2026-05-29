@@ -3,6 +3,7 @@ package com.mgr.api;
 import com.mgr.api.component.AuditorAwareImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.domain.AuditorAware;
@@ -17,6 +18,7 @@ import java.util.TimeZone;
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableAsync
 @EnableAspectJAutoProxy
+@EnableFeignClients
 public class ManagementApplication {
     @Bean
     public AuditorAware<String> auditorAware() {
