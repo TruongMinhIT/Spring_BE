@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@FeignClient(name = "authInternalClient", url = "${feign.client.auth-server.url}", configuration = CustomFeignConfig.class)
+@FeignClient(name = "authInternalClient", url = "${internal.server.url}", configuration = CustomFeignConfig.class)
 public interface AuthClient {
     @PostMapping(value = "/api/token", consumes = MediaType.APPLICATION_JSON_VALUE)
     OAuth2AccessToken getAccessToken(@RequestHeader("Authorization") String authHeader,
