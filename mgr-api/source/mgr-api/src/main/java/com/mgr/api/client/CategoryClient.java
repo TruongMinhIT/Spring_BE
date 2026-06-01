@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
-@FeignClient(name = "categoryInternalClient", url = "http://localhost:8787", configuration = CustomFeignConfig.class)
+@FeignClient(name = "categoryInternalClient", url = "${feign.client.category-service.url}", configuration = CustomFeignConfig.class)
 public interface CategoryClient {
     @GetMapping("/v1/category/list")
     ApiMessageDto<ResponseListDto<List<CategoryDto>>> listCategory(@RequestHeader("Authorization") String token,
