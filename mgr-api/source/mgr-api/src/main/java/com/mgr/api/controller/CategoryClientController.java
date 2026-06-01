@@ -1,6 +1,7 @@
 package com.mgr.api.controller;
 
 import com.mgr.api.client.CategoryClient;
+import com.mgr.api.config.SecurityConstant;
 import com.mgr.api.dto.ApiMessageDto;
 import com.mgr.api.dto.ResponseListDto;
 import com.mgr.api.dto.category.CategoryDto;
@@ -30,7 +31,7 @@ public class CategoryClientController extends ABasicController {
     public ApiMessageDto<ResponseListDto<List<CategoryDto>>> listCategory(CategoryCriteria categoryCriteria, Pageable pageable) {
         String currentToken = getCurrentToken();
         ApiMessageDto<ResponseListDto<List<CategoryDto>>> response = categoryClient
-                .listCategory("Bearer " + currentToken, categoryCriteria, pageable);
+                .listCategory(SecurityConstant.BEARER_TOKEN_TYPE + currentToken, categoryCriteria, pageable);
         return makeSuccessResponse(response.getData(), "Get internal list success");
     }
 }

@@ -9,6 +9,7 @@ import com.mgr.api.constant.MgrConstant;
 import feign.Contract;
 import feign.Feign;
 import feign.codec.Decoder;
+import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -49,5 +50,10 @@ public class CustomFeignConfig {
         HttpMessageConverter<?> jacksonConverter = new MappingJackson2HttpMessageConverter(feignMapper); // converter use feign mapper
         ObjectFactory<HttpMessageConverters> objectFactory = () -> new HttpMessageConverters(jacksonConverter);
         return new ResponseEntityDecoder(new SpringDecoder(objectFactory));
+    }
+
+    @Bean
+    public ErrorDecoder errorDecoder(ObjectMapper objectMapper) {
+        return new CustomFeignErrorDecoder(objectMapper);
     }
 }
