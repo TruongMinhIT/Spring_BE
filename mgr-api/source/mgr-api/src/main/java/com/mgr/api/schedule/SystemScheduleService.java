@@ -11,11 +11,8 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 public class SystemScheduleService {
-    @Autowired
-    private NewsRepository newsRepository;
-
     @Scheduled(fixedRate = 7000)
     public void printCurrentTime() {
-        log.info("[Fixed-rate] Hiện tại là: {}", LocalDateTime.now());
+        System.out.println("[Fixed-rate] Hiện tại là: " + LocalDateTime.now());
     }
 }
