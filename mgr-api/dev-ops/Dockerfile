@@ -1,9 +1,10 @@
-FROM openjdk:11
+#FROM openjdk:11
 #FROM openjdk:12-jdk-alpine
-
+FROM eclipse-temurin:11-jre-alpine
 VOLUME /tmp
 #WORKDIR /opt
-COPY ./{JAR_FILE} app.jar
+#COPY ./{JAR_FILE} app.jar
+COPY source/mgr-api/target/*.jar app.jar
 #COPY ./config.properties config.properties
 
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]

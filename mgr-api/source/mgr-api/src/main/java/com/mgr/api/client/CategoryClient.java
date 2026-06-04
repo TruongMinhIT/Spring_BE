@@ -1,6 +1,7 @@
 package com.mgr.api.client;
 
 import com.mgr.api.config.CustomFeignConfig;
+import com.mgr.api.config.RetrytFeignConfig;
 import com.mgr.api.dto.ApiMessageDto;
 import com.mgr.api.dto.ResponseListDto;
 import com.mgr.api.dto.category.CategoryDto;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
-@FeignClient(name = "categoryInternalClient", url = "${internal.server.url}", configuration = CustomFeignConfig.class)
+@FeignClient(name = "categoryInternalClient", url = "${internal.server.url}", configuration = {CustomFeignConfig.class, RetrytFeignConfig.class})
 public interface CategoryClient {
     @GetMapping("/v1/category/list")
     ApiMessageDto<ResponseListDto<List<CategoryDto>>> listCategory(@RequestHeader("Authorization") String token,

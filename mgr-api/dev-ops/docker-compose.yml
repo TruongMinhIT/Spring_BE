@@ -1,23 +1,65 @@
+##
+## Copyright IBM Corp All Rights Reserved
+##
+## SPDX-License-Identifier: Apache-2.0
+##
+#version: '2'
+#networks:
+#  default_network:
+#    external: true
+#    name: server_network
 #
-# Copyright IBM Corp All Rights Reserved
-#
-# SPDX-License-Identifier: Apache-2.0
-#
+#services:
+#  {SERVICE_NAME}:
+#    container_name: {CONTAINER_NAME}
+#    image: {CONTAINER_IMAGE}:1.0
+#    restart: always
+#    mem_limit: 1500m
+#    environment:
+#      - SPRING_PROFILES_ACTIVE={PROFILES_ACTIVE}
+#    networks:
+#        - default_network
+#    ports:
+#      - "192.168.0.10:{PORT}:8383"
+
 version: '2'
-networks:
-  default_network:
-    external: true
-    name: server_network
-    
+
 services:
-  {SERVICE_NAME}:
-    container_name: {CONTAINER_NAME}
-    image: {CONTAINER_IMAGE}:1.0
-    restart: always
-    mem_limit: 1500m
+  mysql-db:
+    image: mysql:8.0
+    container_name: mgr-mysql-db
     environment:
-      - SPRING_PROFILES_ACTIVE={PROFILES_ACTIVE}
+      MYSQL_ROOT_PASSWORD: MySql@2o24.vnn!
+      MYSQL_DATABASE: db_mgr
     networks:
-        - default_network
+      - mgr-api-network
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+
+  mgr-api-service:
+    container_name: mgr-api-backend
+    build: # Tạo image
+      context: ../ # Chỉ định thư mục gốc chứa mã nguồn
+      dockerfile: dev-ops/Dockerfile # Chỉ định đường dẫn tới file Dockerfile để tự đúc Image
+    image: mgr-api-image:1.0
+    depends_on:
+      - mysql-db
+    restart: always
+    mem_limit: 1500m # Giới hạn RAM tối đa Container được phép ngốn là 1.5GB
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/db_mgr?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
     ports:
-      - "192.168.0.10:{PORT}:8383"
+      - "8787:8787"
+    networks:
+      - mgr-api-network
+    volumes:
+      - ./config:/config
+
+networks:
+  mgr-api-network:
+    driver: bridge
+
+volumes:
+  db_data: # Khai báo không gian bộ nhớ ảo đính kèm cho DB
