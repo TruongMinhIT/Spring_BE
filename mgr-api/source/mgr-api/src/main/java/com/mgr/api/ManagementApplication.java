@@ -9,7 +9,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
@@ -20,7 +19,6 @@ import java.util.TimeZone;
 @EnableAsync
 @EnableAspectJAutoProxy
 @EnableFeignClients
-@EnableScheduling
 public class ManagementApplication {
     @Bean
     public AuditorAware<String> auditorAware() {
