@@ -24,4 +24,6 @@ public class SystemScheduleService {
     public void demoCron() {
         System.out.println("[Fixed-rate] Hiện tại là: " + LocalDateTime.now());
     }
+
+    //Truong minh da o day
 }
