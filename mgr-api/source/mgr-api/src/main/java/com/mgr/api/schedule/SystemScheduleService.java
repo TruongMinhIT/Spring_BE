@@ -9,8 +9,14 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 public class SystemScheduleService {
-    @Scheduled(fixedRate = 7000)
+    @Scheduled(fixedRate = 20000)
     public void printCurrentTime() {
         System.out.println("[Fixed-rate] Hiện tại là: " + LocalDateTime.now());
+    }
+
+    @Scheduled(fixedDelay = 2000)
+    public void printDemofixedDelay() throws InterruptedException {
+        System.out.println("[Fixed-rate] Hiện tại là: " + LocalDateTime.now());
+        Thread.sleep(3000);
     }
 }
