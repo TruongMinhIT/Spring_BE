@@ -24,4 +24,9 @@ public class SystemScheduleService {
     public void demoCron() {
         System.out.println("[Fixed-rate] Hiện tại là: " + LocalDateTime.now());
     }
+
+    @Scheduled(fixedDelay = 6000)
+    public void printDemofixedDelay2() throws InterruptedException {
+        System.out.println("[Fixed-rate] Hiện tại là: " + LocalDateTime.now());
+    }
 }
