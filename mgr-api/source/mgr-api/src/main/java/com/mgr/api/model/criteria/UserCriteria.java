@@ -2,6 +2,7 @@ package com.mgr.api.model.criteria;
 
 import com.mgr.api.model.Account;
 import com.mgr.api.model.Category;
+import com.mgr.api.model.News;
 import com.mgr.api.model.User;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +23,7 @@ public class UserCriteria implements Serializable {
     private String email;
     private String fullName;
     private String phone;
+    private Boolean hasNews;
 
     public Specification<User> getSpecification(){
         return new Specification<User>() {
@@ -59,6 +61,13 @@ public class UserCriteria implements Serializable {
                     }
                     if (StringUtils.isNoneBlank(getPhone())) {
                         predicates.add(cb.like(accountJoin.get("phone"), "%" + getPhone().trim() + "%"));
+                    }
+                    if (hasNews != null && hasNews) {
+                        Subquery<News> subquery = criteriaQuery.subquery(News.class);
+                        Root<News> subroot = subquery.from(News.class);
+                        subquery.select(subroot)
+                                .where(cb.equal(subroot.get("user").get("id"), root.get("id")));
+                        predicates.add(cb.exists(subquery));
                     }
                 }
 

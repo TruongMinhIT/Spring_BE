@@ -1,14 +1,14 @@
 package com.mgr.api.model.criteria;
 
+import com.mgr.api.model.Account;
+import com.mgr.api.model.Category;
 import com.mgr.api.model.News;
+import com.mgr.api.model.User;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,9 @@ public class NewsCriteria implements Serializable {
     private Long categoryId;
     private Integer status;
     private Long userId;
+    private String keyword;
+    private String categoryName;
+    private String authorUsername;
 
     public Specification<News> getSpecification() {
         return new Specification<News>() {
@@ -43,6 +46,27 @@ public class NewsCriteria implements Serializable {
                 }
                 if (getUserId() != null) {
                     predicates.add(cb.equal(root.get("user").get("id"), getUserId()));
+                }
+                // Join/ Or
+                // Group Or
+                if (!StringUtils.isEmpty(getKeyword())) {
+                    String searchKey = "%" + getKeyword() + "%";
+                    Predicate orPredicate = cb.or(
+                            cb.like(cb.lower(root.get("title")), searchKey),
+                            cb.like(cb.lower(root.get("description")), searchKey)
+                    );
+                    predicates.add(orPredicate);
+                }
+                // Join many to one
+                if (StringUtils.isNoneBlank(getCategoryName())) {
+                    Join<News, Category> categoryJoin = root.join("category", JoinType.INNER);
+                    predicates.add(cb.like(cb.lower(categoryJoin.get("name")), "%" + getCategoryName().trim().toLowerCase() + "%"));
+                }
+                // Multi Join
+                if (StringUtils.isNoneBlank(getAuthorUsername())) {
+                    Join<News, User> userJoin = root.join("user", JoinType.INNER);
+                    Join<User, Account> accountJoin = userJoin.join("account", JoinType.INNER);
+                    predicates.add(cb.like(cb.lower(accountJoin.get("username")), "%" + getAuthorUsername().trim().toLowerCase() + "%"));
                 }
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
             }

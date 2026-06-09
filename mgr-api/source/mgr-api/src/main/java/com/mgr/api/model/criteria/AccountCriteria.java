@@ -2,16 +2,15 @@ package com.mgr.api.model.criteria;
 
 
 import com.mgr.api.model.Account;
+import com.mgr.api.model.News;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,6 +23,12 @@ public class AccountCriteria implements Serializable {
     private String email;
     private String fullName;
     private String phone;
+    private List<Integer> kinds;
+    private Date lastLoginAfter;
+    private Boolean neverLoggedIn;
+    private Integer minAttemptLogin;
+    private String keyWord;
+    private Boolean hasNeverPostedNews;
 
     public Specification<Account> getSpecification() {
         return new Specification<Account>() {
@@ -51,6 +56,40 @@ public class AccountCriteria implements Serializable {
                 if (!StringUtils.isEmpty(getFullName())) {
                     predicates.add(cb.like(cb.lower(root.get("fullName")), "%" + getFullName().toLowerCase() + "%"));
                 }
+                if (!StringUtils.isEmpty(getPhone())) {
+                    predicates.add(cb.like(root.get("phone"), "%" + getPhone() + "%"));
+                }
+                // Nang cao
+                if (getKinds() != null && !getKinds().isEmpty()) {
+                    predicates.add(root.get("kind").in(getKinds()));
+                }
+                if (getLastLoginAfter() != null) {
+                    predicates.add(cb.greaterThanOrEqualTo(root.get("lastLogin"), getLastLoginAfter()));
+                }
+                if (neverLoggedIn != null && getNeverLoggedIn()) {
+                    predicates.add(cb.isNull(root.get("lastLogin")));
+                }
+                if (minAttemptLogin != null) {
+                    predicates.add(cb.greaterThanOrEqualTo(root.get("attemptLogin"), getMinAttemptLogin()));
+                }
+                if (!StringUtils.isEmpty(getKeyWord())) {
+                    String keywordLike = "%" + getKeyWord().trim().toLowerCase() + "%";
+                    Predicate orPredicate = cb.or(
+                            cb.like(cb.lower(root.get("username")), keywordLike),
+                            cb.like(cb.lower(root.get("email")), keywordLike),
+                            cb.like(cb.lower(root.get("fullname")), keywordLike)
+                    );
+                    predicates.add(orPredicate);
+                }
+                // SubQuerry has never posted news
+                if (hasNeverPostedNews != null && hasNeverPostedNews) {
+                    Subquery<News> subquery = query.subquery(News.class);
+                    Root<News> subRoot = subquery.from(News.class);
+                    subquery.select(subRoot)
+                            .where(cb.equal(subRoot.get("user").get("id"), root.get("id")));
+                    predicates.add(cb.not(cb.exists(subquery)));
+                }
+
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
             }
         };

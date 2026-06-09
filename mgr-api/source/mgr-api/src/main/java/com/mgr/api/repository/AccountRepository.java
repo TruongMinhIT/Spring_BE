@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long>, JpaSpecificationExecutor<Account> {
@@ -31,4 +33,22 @@ public interface AccountRepository extends JpaRepository<Account, Long>, JpaSpec
     Optional<Account> findByUsernameOrPhone(@Param("username") String username, @Param("phone") String phone);
 
     Optional<Account> findByIdAndStatus(long id, Integer status);
+
+    List<Account> findByKindOrIsSuperAdminTrue(int kind);
+
+    List<Account> findByLastLoginGreaterThan(Date lastLogin);
+
+    List<Account> findByGroupNameContaining(String groupName);
+
+    @Query("SELECT a FROM Account a WHERE a.email = :email")
+    Optional<Account> findByEmail(@Param("email") String email);
+
+    @Query("SELECT a FROM Account a WHERE a.status = 0 OR a.attemptLogin > :maxAttemp")
+    List<Account> findLockedOrExcessiveLoginAttempt(@Param("maxAttempt") Integer maxAttempt);
+
+    @Query("SELECT a FROM Account a JOIN a.group g WHERE g.kind = 2")
+    List<Account> findByGroupKind();
+
+    @Query(value = "SELECT * FROM db_mgr_account WHERE username = :username", nativeQuery = true)
+    Optional<Account> findByUsername(@Param("username") String username);
 }
