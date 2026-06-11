@@ -79,6 +79,7 @@ public class PostController extends ABasicController{
             }
             post.setTags(tags);
         }
+        postRepository.save(post);
         return makeSuccessResponse("Create post success");
     }
 
@@ -87,24 +88,11 @@ public class PostController extends ABasicController{
     public ApiMessageDto<String> updatePost(@Valid @RequestBody UpdatePostForm updatePostForm, BindingResult bindingResult) {
         Post post = postRepository.findById(updatePostForm.getId())
                 .orElseThrow(() -> new NotFoundException("Post not found", ErrorCode.POST_ERROR_NOT_FOUND));
-        if (StringUtils.isNoneBlank(updatePostForm.getTitle())) {
-            post.setTitle(updatePostForm.getTitle());
+        Long currentUserId = getCurrentUser();
+        if (!post.getUser().getId().equals(currentUserId)) {
+            throw new BadRequestException("You do not have permission to update this post", ErrorCode.POST_ERROR_UNABLE_UPDATE);
         }
-        if (StringUtils.isNoneBlank(updatePostForm.getDescription())) {
-            post.setDescription(updatePostForm.getDescription());
-        }
-        if (updatePostForm.getPrice() != null) {
-            post.setPrice(updatePostForm.getPrice());
-        }
-        if (updatePostForm.getConditionStatus() != null) {
-            post.setConditionStatus(updatePostForm.getConditionStatus());
-        }
-        if (updatePostForm.getIsFree() != null) {
-            post.setIsFree(updatePostForm.getIsFree());
-        }
-        if (updatePostForm.getType() != null) {
-            post.setType(updatePostForm.getType());
-        }
+        postMapper.mappingUpdatePostToEntity(updatePostForm, post);
         if (updatePostForm.getCategoryId() != null) {
             Category category = categoryRepository.findById(updatePostForm.getCategoryId())
                     .orElseThrow(() -> new NotFoundException("Category not found", ErrorCode.CATEGORY_ERROR_NOT_FOUND));
@@ -127,7 +115,7 @@ public class PostController extends ABasicController{
         Page<Post> page = postRepository.findAll(postCriteria.getSpecification(), pageable);
         ResponseListDto<PostDto> responseListDto = new ResponseListDto(postMapper.fromEntityToPostDtoList(page.getContent()),
                 page.getTotalElements(),
-                pageable.getPageNumber());
+                page.getTotalPages());
         return makeSuccessResponse(responseListDto, "List post success");
     }
 

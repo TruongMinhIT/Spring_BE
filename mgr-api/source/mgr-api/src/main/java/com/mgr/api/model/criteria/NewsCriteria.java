@@ -1,14 +1,12 @@
 package com.mgr.api.model.criteria;
 
 import com.mgr.api.model.News;
+import com.mgr.api.model.Tag;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +18,7 @@ public class NewsCriteria implements Serializable {
     private Long categoryId;
     private Integer status;
     private Long userId;
+    private List<Long> tagIds;
 
     public Specification<News> getSpecification() {
         return new Specification<News>() {
@@ -43,6 +42,14 @@ public class NewsCriteria implements Serializable {
                 }
                 if (getUserId() != null) {
                     predicates.add(cb.equal(root.get("user").get("id"), getUserId()));
+                }
+                if (getTagIds() != null && !getTagIds().isEmpty()) {
+                    Subquery<News> subquery = query.subquery(News.class);
+                    Root<News> subroot = subquery.from(News.class);
+                    Join<News, Tag> subjoin = subroot.join("tags");
+                    subquery.select(subroot)
+                            .where(subjoin.get("id").in(getTagIds()));
+                    predicates.add(root.in(subquery));
                 }
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
             }
