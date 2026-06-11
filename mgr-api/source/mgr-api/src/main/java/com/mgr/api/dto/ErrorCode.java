@@ -56,4 +56,11 @@ public class ErrorCode {
     public static final String NEWS_ERROR_UNABLE_UPDATE = "ERROR-NEWS-0001";
     public static final String NEWS_ERROR_UNABLE_DELETE = "ERROR-NEWS-0002";
 
+    /**
+     * News
+     */
+    public static final String TAG_ERROR_NOT_FOUND = "ERROR-TAG-0000";
+    public static final String TAG_ERROR_NAME_EXISTED = "ERROR-TAG-0001";
+    public static final String TAG_ERROR_SLUG_EXISTED = "ERROR-TAG-0002";
+
 }

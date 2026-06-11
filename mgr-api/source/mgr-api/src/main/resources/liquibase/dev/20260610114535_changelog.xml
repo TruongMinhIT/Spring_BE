@@ -1,0 +1,228 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="Authentication" id="1781091946825-1">
+        <createTable tableName="db_mgr_news_tag">
+            <column name="news_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1781091946825-2">
+        <createTable tableName="db_mgr_post">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_mgr_postPK"/>
+            </column>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="description" type="TEXT"/>
+            <column name="price" type="DECIMAL(19, 2)"/>
+            <column name="condition_status" type="INT"/>
+            <column name="is_free" type="BIT"/>
+            <column name="type" type="INT"/>
+            <column name="category_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1781091946825-3">
+        <createTable tableName="db_mgr_post_tag">
+            <column name="post_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1781091946825-4">
+        <createTable tableName="db_mgr_tag">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_mgr_tagPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="slug" type="VARCHAR(255)"/>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1781091946825-5">
+        <addUniqueConstraint columnNames="name" constraintName="UC_DB_MGR_TAGNAME_COL" tableName="db_mgr_tag"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1781091946825-6">
+        <addUniqueConstraint columnNames="slug" constraintName="UC_DB_MGR_TAGSLUG_COL" tableName="db_mgr_tag"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1781091946825-7">
+        <addForeignKeyConstraint baseColumnNames="news_id" baseTableName="db_mgr_news_tag" constraintName="FK1rp8qq8krpbblo0dwaw5i3q1m" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_mgr_news" validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1781091946825-8">
+        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="db_mgr_post" constraintName="FK24n11chma6wb34n3qjh0gu6i7" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_mgr_category" validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1781091946825-9">
+        <addForeignKeyConstraint baseColumnNames="post_id" baseTableName="db_mgr_post_tag" constraintName="FK81e5yr1qq3rff96li8xetnhi" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_mgr_post" validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1781091946825-10">
+        <addForeignKeyConstraint baseColumnNames="tag_id" baseTableName="db_mgr_post_tag" constraintName="FK86hn5d7khs0q7aio8w1rp55yw" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_mgr_tag" validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1781091946825-11">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="db_mgr_post" constraintName="FKgr43dxrppvndctm89hpte5vyu" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_mgr_user" validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1781091946825-12">
+        <addForeignKeyConstraint baseColumnNames="tag_id" baseTableName="db_mgr_news_tag" constraintName="FKq53yxifkrtaemdu1t4788gl2" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_mgr_tag" validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1781091946825-13">
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="8200000000000001"/>
+            <column name="name" value="Create Tag"/>
+            <column name="action" value="/v1/tag/create"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="Create Tag"/>
+            <column name="name_group" value="Tag"/>
+            <column name="permission_code" value="TAG_C"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-06-10T18:00:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-06-10T18:00:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="8200000000000002"/>
+            <column name="name" value="Get Tag"/>
+            <column name="action" value="/v1/tag/get/{id}"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="Get Tag"/>
+            <column name="name_group" value="Tag"/>
+            <column name="permission_code" value="TAG_V"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-06-10T18:00:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-06-10T18:00:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="8200000000000003"/>
+            <column name="name" value="Update Tag"/>
+            <column name="action" value="/v1/tag/update"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="Update Tag"/>
+            <column name="name_group" value="Tag"/>
+            <column name="permission_code" value="TAG_U"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-06-10T18:00:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-06-10T18:00:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="8200000000000004"/>
+            <column name="name" value="List Tag"/>
+            <column name="action" value="/v1/tag/list"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="List Tag"/>
+            <column name="name_group" value="Tag"/>
+            <column name="permission_code" value="TAG_L"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-06-10T18:00:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-06-10T18:00:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="8200000000000005"/>
+            <column name="name" value="Delete Tag"/>
+            <column name="action" value="/v1/tag/delete"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="Delete Tag"/>
+            <column name="name_group" value="Tag"/>
+            <column name="permission_code" value="TAG_D"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-06-10T18:00:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-06-10T18:00:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+    <changeSet author="Authentication" id="1781091946825-14">
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="8200000000000001"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="8200000000000002"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="8200000000000003"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="8200000000000004"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="8200000000000005"/>
+        </insert>
+
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="8200000000000001"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="8200000000000002"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="8200000000000003"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="8200000000000004"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="8200000000000005"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="3"/>
+            <column name="permission_id" valueNumeric="8200000000000002"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="3"/>
+            <column name="permission_id" valueNumeric="8200000000000004"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

@@ -17,6 +17,12 @@ public class MgrConstant {
     public static final int GENDER_MALE = 1;
     public static final int GENDER_FEMALE = 2;
     public static final int GENDER_OTHER = 3;
+
+    public static final int POST_TYPE_SALE = 1;
+    public static final int POST_TYPE_BUY = 2;
+
+    public static final int POST_CONDITION_STATUS_BRAND_NEW = 1;
+    public static final int POST_CONDITION_STATUS_USED = 2;
     private MgrConstant() {
         throw new IllegalStateException("Utility class");
     }
