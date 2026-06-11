@@ -1,0 +1,138 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="Authentication" id="1781169625512-1">
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="9300000000000001"/>
+            <column name="name" value="Create Post"/>
+            <column name="action" value="/v1/post/create"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="Create Post"/>
+            <column name="name_group" value="Post"/>
+            <column name="permission_code" value="POST_C"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-06-11T15:00:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-06-11T15:00:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="9300000000000002"/>
+            <column name="name" value="Get Post"/>
+            <column name="action" value="/v1/post/get/{id}"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="Get Post"/>
+            <column name="name_group" value="Post"/>
+            <column name="permission_code" value="POST_V"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-06-11T15:00:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-06-11T15:00:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="9300000000000003"/>
+            <column name="name" value="Update Post"/>
+            <column name="action" value="/v1/post/update"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="Update Post"/>
+            <column name="name_group" value="Post"/>
+            <column name="permission_code" value="POST_U"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-06-11T15:00:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-06-11T15:00:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="9300000000000004"/>
+            <column name="name" value="List Post"/>
+            <column name="action" value="/v1/post/list"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="List Post"/>
+            <column name="name_group" value="Post"/>
+            <column name="permission_code" value="POST_L"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-06-11T15:00:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-06-11T15:00:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+        <insert tableName="db_mgr_permission">
+            <column name="id" valueNumeric="9300000000000005"/>
+            <column name="name" value="Delete Post"/>
+            <column name="action" value="/v1/post/delete/{id}"/>
+            <column name="show_menu" valueBoolean="false"/>
+            <column name="description" value="Delete Post"/>
+            <column name="name_group" value="Post"/>
+            <column name="permission_code" value="POST_D"/>
+            <column name="created_by" value="admin"/>
+            <column name="created_date" valueDate="2026-06-11T15:00:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2026-06-11T15:00:00"/>
+            <column name="status" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+    <changeSet author="Authentication" id="1781169625512-2">
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="9300000000000001"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="9300000000000002"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="9300000000000003"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="9300000000000004"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="1"/>
+            <column name="permission_id" valueNumeric="9300000000000005"/>
+        </insert>
+
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="9300000000000001"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="9300000000000002"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="9300000000000003"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="9300000000000004"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="2"/>
+            <column name="permission_id" valueNumeric="9300000000000005"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="3"/>
+            <column name="permission_id" valueNumeric="9300000000000001"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="3"/>
+            <column name="permission_id" valueNumeric="9300000000000002"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="3"/>
+            <column name="permission_id" valueNumeric="9300000000000003"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="3"/>
+            <column name="permission_id" valueNumeric="9300000000000004"/>
+        </insert>
+        <insert tableName="db_mgr_permission_group">
+            <column name="group_id" valueNumeric="3"/>
+            <column name="permission_id" valueNumeric="9300000000000005"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

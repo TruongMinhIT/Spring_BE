@@ -11,10 +11,12 @@ import com.mgr.api.form.news.UpdateNewsForm;
 import com.mgr.api.mapper.NewsMapper;
 import com.mgr.api.model.Category;
 import com.mgr.api.model.News;
+import com.mgr.api.model.Tag;
 import com.mgr.api.model.User;
 import com.mgr.api.model.criteria.NewsCriteria;
 import com.mgr.api.repository.CategoryRepository;
 import com.mgr.api.repository.NewsRepository;
+import com.mgr.api.repository.TagRepository;
 import com.mgr.api.repository.UserRepository;
 import com.mgr.api.service.MgrApiService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("v1/news")
@@ -50,6 +53,9 @@ public class NewsController extends ABasicController {
     @Autowired
     private MgrApiService mgrApiService;
 
+    @Autowired
+    private TagRepository tagRepository;
+
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('NEW_V')")
     public ApiMessageDto<NewsDto> getNews(@PathVariable("id") Long id) {
@@ -69,6 +75,13 @@ public class NewsController extends ABasicController {
         News news = newsMapper.fromCreateNewsFormToEntity(createNewsForm);
         news.setCategory(category);
         news.setUser(user);
+        if (createNewsForm.getTagIds() != null && !createNewsForm.getTagIds().isEmpty()) {
+            List<Tag> tags = tagRepository.findAllById(createNewsForm.getTagIds());
+            if (tags.size() != createNewsForm.getTagIds().size()) {
+                throw new BadRequestException("One or more tags do not exist", ErrorCode.TAG_ERROR_NOT_FOUND);
+            }
+            news.setTags(tags);
+        }
         newsRepository.save(news);
         return makeSuccessResponse("Create News success");
     }
@@ -94,6 +107,13 @@ public class NewsController extends ABasicController {
             Category category = categoryRepository.findById(updateNewsForm.getCategoryId())
                     .orElseThrow(() -> new NotFoundException("Category not found", ErrorCode.CATEGORY_ERROR_NOT_FOUND));
             news.setCategory(category);
+        }
+        if (updateNewsForm.getTagIds() != null && !updateNewsForm.getTagIds().isEmpty()) {
+            List<Tag> tags = tagRepository.findAllById(updateNewsForm.getTagIds());
+            if (tags.size() != updateNewsForm.getTagIds().size()) {
+                throw new BadRequestException("One or more tags do not exist", ErrorCode.TAG_ERROR_NOT_FOUND);
+            }
+            news.setTags(tags);
         }
         newsRepository.save(news);
         return makeSuccessResponse("Update news success");

@@ -57,10 +57,15 @@ public class ErrorCode {
     public static final String NEWS_ERROR_UNABLE_DELETE = "ERROR-NEWS-0002";
 
     /**
-     * News
+     * Tag
      */
     public static final String TAG_ERROR_NOT_FOUND = "ERROR-TAG-0000";
     public static final String TAG_ERROR_NAME_EXISTED = "ERROR-TAG-0001";
     public static final String TAG_ERROR_SLUG_EXISTED = "ERROR-TAG-0002";
 
+    /**
+     * Post
+     */
+    public static final String POST_ERROR_NOT_FOUND = "ERROR-POST-0000";
+    public static final String POST_ERROR_UNABLE_DELETE = "ERROR-POST-0001";
 }

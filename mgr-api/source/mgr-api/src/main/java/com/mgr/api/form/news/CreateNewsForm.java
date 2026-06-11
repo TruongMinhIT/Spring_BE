@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @ApiModel
@@ -24,4 +25,7 @@ public class CreateNewsForm {
     @NotNull(message = "categoryId can not null")
     @ApiModelProperty(name = "categoryId", required = true)
     private Long categoryId;
+
+    @ApiModelProperty(name = "tagIds")
+    private List<Long> tagIds;
 }
