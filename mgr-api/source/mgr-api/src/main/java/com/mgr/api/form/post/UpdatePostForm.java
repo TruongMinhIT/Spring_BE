@@ -26,14 +26,14 @@ public class UpdatePostForm {
     @ApiModelProperty(name = "price")
     private BigDecimal price;
 
-    @ValidPostConditionStatus
+    @ValidPostConditionStatus(allowNull = true)
     @ApiModelProperty(name = "conditionStatus", required = true, notes = "1: Brand new, 2: Used")
     private Integer conditionStatus;
 
     @ApiModelProperty(name = "isFree", required = true)
     private Boolean isFree;
 
-    @ValidPostType
+    @ValidPostType(allowNull = true)
     @ApiModelProperty(name = "type", required = true, notes = "1: For sale, 2: For buy")
     private Integer type;
 
