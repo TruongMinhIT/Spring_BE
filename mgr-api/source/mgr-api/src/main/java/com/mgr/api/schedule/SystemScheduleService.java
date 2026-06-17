@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 public class SystemScheduleService {
-    @Scheduled(fixedRate = 7000)
+//    @Scheduled(fixedRate = 7000)
     public void printCurrentTime() {
         System.out.println("[Fixed-rate] Hiện tại là: " + LocalDateTime.now());
     }
 
-    @Scheduled(fixedDelay = 2000)
+//    @Scheduled(fixedDelay = 2000)
     public void printDemofixedDelay() throws InterruptedException {
         System.out.println("[Fixed-rate] Hiện tại là: " + LocalDateTime.now());
         Thread.sleep(3000);
@@ -25,7 +25,7 @@ public class SystemScheduleService {
         System.out.println("[Fixed-rate] Hiện tại là: " + LocalDateTime.now());
     }
 
-    @Scheduled(fixedDelay = 6000)
+//    @Scheduled(fixedDelay = 6000)
     public void printDemofixedDelay2() throws InterruptedException {
         System.out.println("[Fixed-rate] Hiện tại là: " + LocalDateTime.now());
     }

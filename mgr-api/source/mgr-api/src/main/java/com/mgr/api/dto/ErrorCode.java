@@ -39,8 +39,10 @@ public class ErrorCode {
     /**
      * Category
      */
-    public static final String CATEGORY_ERROR_NOT_FOUND = "ERROR-GROUP-0000";
-    public static final String CATEGORY_ERROR_NAME_EXISTED = "ERROR-GROUP-0001";
+    public static final String CATEGORY_ERROR_NOT_FOUND = "ERROR-CATEGORY-0000";
+    public static final String CATEGORY_ERROR_NAME_EXISTED = "ERROR-CATEGORY-0001";
+    public static final String CATEGORY_ERROR_UNABLE_UPDATE = "ERROR-CATEGORY-0002";
+    public static final String CATEGORY_ERROR_UNABLE_DELETE = "ERROR-CATEGORY-0003";
 
     /**
      * User

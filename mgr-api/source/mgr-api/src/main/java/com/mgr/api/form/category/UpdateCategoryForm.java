@@ -19,4 +19,7 @@ public class UpdateCategoryForm {
 
     @ApiModelProperty(name = "description", required = true)
     private String description;
+
+    @ApiModelProperty(name = "parentId")
+    private Long parentId;
 }

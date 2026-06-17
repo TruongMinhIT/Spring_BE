@@ -19,6 +19,7 @@ public class CategoryCriteria implements Serializable {
     private String name;
     private String description;
     private Integer status;
+    private Long parentId;
 
     public Specification<Category> getSpecification(){
         return new Specification<Category>() {
@@ -38,6 +39,13 @@ public class CategoryCriteria implements Serializable {
                 }
                 if (getStatus()!=null){
                     predicates.add(cb.equal(root.get("status"), getStatus()));
+                }
+                if (getParentId() != null)
+                {
+                    predicates.add(cb.equal(root.get("parent").get("id"), getParentId()));
+                }
+                else {
+                    predicates.add(cb.isNull(root.get("parent")));
                 }
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
             }

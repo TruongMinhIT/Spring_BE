@@ -23,10 +23,11 @@ public interface CategoryMapper {
     @Mapping(source = "status", target = "status")
     @Mapping(source = "createdDate", target = "createdDate")
     @Mapping(source = "modifiedDate", target = "modifiedDate")
+    @Mapping(source = "parent.id", target = "parentId")
     @BeanMapping(ignoreByDefault = true)
     @Named("fromCategoryToDto")
     CategoryDto fromCategoryToDto(Category category);
 
-    @IterableMapping(elementTargetType = CategoryDto.class)
+    @IterableMapping(elementTargetType = CategoryDto.class, qualifiedByName = "fromCategoryToDto")
     List<CategoryDto> fromEntityToCategoryDtoList(List<Category> categories);
 }

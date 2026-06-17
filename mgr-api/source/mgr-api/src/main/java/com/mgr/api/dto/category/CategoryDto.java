@@ -10,5 +10,6 @@ public class CategoryDto extends ABasicAdminDto {
     private String name;
     @ApiModelProperty(name = "description")
     private String description;
-
+    @ApiModelProperty(name = "parentId")
+    private Long parentId;
 }

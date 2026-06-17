@@ -73,6 +73,12 @@ public class CategoryController extends ABasicController{
             throw new BadRequestException("Category name is exist", ErrorCode.CATEGORY_ERROR_NAME_EXISTED);
         }
         category = categoryMapper.fromCreateCategoryFormToEntity(createCategoryForm);
+        if (createCategoryForm.getParentId() != null)
+        {
+            Category parent = categoryRepository.findById(createCategoryForm.getParentId())
+                    .orElseThrow(() -> new NotFoundException("Parent category not found", ErrorCode.CATEGORY_ERROR_NOT_FOUND));
+            category.setParent(parent);
+        }
         categoryRepository.save(category);
         apiMessageDto.setMessage("Create a new category success");
         return apiMessageDto;
@@ -93,8 +99,19 @@ public class CategoryController extends ABasicController{
             }
             category.setName(updateCategoryForm.getName());
         }
-        if(StringUtils.isNoneBlank(updateCategoryForm.getDescription())){
+        if (StringUtils.isNoneBlank(updateCategoryForm.getDescription())) {
             category.setDescription(updateCategoryForm.getDescription());
+        }
+        if (updateCategoryForm.getParentId() != null) {
+            if (updateCategoryForm.getId().equals(updateCategoryForm.getParentId())) {
+                throw new BadRequestException("Cagory cannot be its own parent", ErrorCode.CATEGORY_ERROR_UNABLE_UPDATE);
+            }
+            Category parent = categoryRepository.findById(updateCategoryForm.getParentId())
+                    .orElseThrow(() -> new NotFoundException("Parent category not found", ErrorCode.CATEGORY_ERROR_NOT_FOUND));
+            category.setParent(parent);
+        }
+        else {
+            category.setParent(null);
         }
         categoryRepository.save(category);
         apiMessageDto.setMessage("Update category success.");
@@ -121,6 +138,10 @@ public class CategoryController extends ABasicController{
         Category category = categoryRepository.findById(id).orElse(null);
         if (category == null) {
             throw new NotFoundException("Category not found!", ErrorCode.CATEGORY_ERROR_NOT_FOUND);
+        }
+        List<Category> childCategories = categoryRepository.findByParentId(id);
+        if (childCategories != null && !childCategories.isEmpty()) {
+            throw new BadRequestException("Cannot delete because this category contains sub-categories", ErrorCode.CATEGORY_ERROR_UNABLE_DELETE);
         }
         List<News> newsList = newsRepository.findAllByCategoryId(id);
         if (!newsList.isEmpty()) {

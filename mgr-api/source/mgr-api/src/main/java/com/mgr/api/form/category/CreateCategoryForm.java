@@ -15,4 +15,6 @@ public class CreateCategoryForm {
     @NotEmpty(message = "description cant not be emty")
     @ApiModelProperty(name = "description", required = true)
     private String description;
+    @ApiModelProperty(name = "parentId")
+    private Long parentId;
 }
