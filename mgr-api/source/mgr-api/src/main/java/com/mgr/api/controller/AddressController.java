@@ -55,6 +55,7 @@ public class AddressController extends ABasicController {
         return makeSuccessResponse(addressMapper.fromEntityToAddressDto(address), "Get address success");
     }
 
+    @Transactional
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADDR_C')")
     public ApiMessageDto<String> createAddress(@Valid @RequestBody CreateAddressForm createAddressForm, BindingResult bindingResult) {
@@ -79,7 +80,8 @@ public class AddressController extends ABasicController {
         return makeSuccessResponse("Create address success");
     }
 
-    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADDR_U')")
     public ApiMessageDto<String> updateAddress(@Valid @RequestBody UpdateAddressForm updateAddressForm, BindingResult bindingResult) {
         Long userId = getCurrentUser();
@@ -96,7 +98,10 @@ public class AddressController extends ABasicController {
         }
         Long provinceId = updateAddressForm.getProvinceId() != null ? updateAddressForm.getProvinceId() : address.getProvince().getId();
         Long districtId = updateAddressForm.getDistrictId() != null ? updateAddressForm.getDistrictId() : address.getDistrict().getId();
-        Long communeId = updateAddressForm.getCommuneId() != null ? updateAddressForm.getCommuneId() : address.getCommune().getId();
+        Long communeId = updateAddressForm.getCommuneId();
+        if (communeId == null && address.getCommune() != null) {
+            communeId = address.getCommune().getId();
+        }
         validateAndSetNationHierarchy(address, provinceId, districtId, communeId);
         if (updateAddressForm.getIsDefault() != null) {
             if (updateAddressForm.getIsDefault() && !address.getIsDefault()) {
@@ -157,13 +162,18 @@ public class AddressController extends ABasicController {
         if (!district.getKind().equals(MgrConstant.NATION_TYPE_DISTRICT) || !district.getParent().getId().equals(province.getId())) {
             throw new BadRequestException("Invalid District Id", ErrorCode.NATION_ERROR_INVALID);
         }
-        Nation commune = nationRepository.findById(communeId)
-                .orElseThrow(() -> new NotFoundException("Commune not found", ErrorCode.NATION_ERROR_NOT_FOUND));
-        if (!commune.getKind().equals(MgrConstant.NATION_TYPE_COMMUNE) || !commune.getParent().getId().equals(district.getId())) {
-            throw new BadRequestException("Invalid Commune Id", ErrorCode.NATION_ERROR_INVALID);
-        }
         address.setProvince(province);
         address.setDistrict(district);
-        address.setCommune(commune);
+        if (communeId != null) {
+            Nation commune = nationRepository.findById(communeId)
+                    .orElseThrow(() -> new NotFoundException("Commune not found", ErrorCode.NATION_ERROR_NOT_FOUND));
+            if (!commune.getKind().equals(MgrConstant.NATION_TYPE_COMMUNE) || !commune.getParent().getId().equals(district.getId())) {
+                throw new BadRequestException("Invalid Commune Id", ErrorCode.NATION_ERROR_INVALID);
+            }
+            address.setCommune(commune);
+        }
+        else {
+            address.setCommune(null);
+        }
     }
 }

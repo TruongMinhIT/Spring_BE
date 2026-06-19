@@ -12,6 +12,7 @@ import com.mgr.api.form.nation.UpdateNationForm;
 import com.mgr.api.mapper.NationMapper;
 import com.mgr.api.model.Nation;
 import com.mgr.api.model.criteria.NationCriteria;
+import com.mgr.api.repository.AddressRepository;
 import com.mgr.api.repository.NationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -32,10 +33,12 @@ import javax.validation.Valid;
 public class NationController extends ABasicController {
     private final NationRepository nationRepository;
     private final NationMapper nationMapper;
+    private final AddressRepository addressRepository;
 
-    public NationController(NationRepository nationRepository, NationMapper nationMapper) {
+    public NationController(NationRepository nationRepository, NationMapper nationMapper, AddressRepository addressRepository) {
         this.nationRepository = nationRepository;
         this.nationMapper = nationMapper;
+        this.addressRepository = addressRepository;
     }
 
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,6 +49,7 @@ public class NationController extends ABasicController {
         return makeSuccessResponse(nationMapper.fromEntityToNationDto(nation), "Get nation success");
     }
 
+    @Transactional
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('NAT_C')")
     public ApiMessageDto<String> createNation(@Valid @RequestBody CreateNationForm createNationForm, BindingResult bindingResult) {
@@ -79,7 +83,8 @@ public class NationController extends ABasicController {
         return makeSuccessResponse("Create nation success");
     }
 
-    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
+    @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('NAT_U')")
     public ApiMessageDto<String> updateNation(@Valid @RequestBody UpdateNationForm updateNationForm, BindingResult bindingResult) {
         Nation nation = nationRepository.findById(updateNationForm.getId())
@@ -150,6 +155,10 @@ public class NationController extends ABasicController {
     public ApiMessageDto<String> deleteNation(@PathVariable("id") Long id) {
         Nation nation = nationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Nation not found", ErrorCode.NATION_ERROR_NOT_FOUND));
+        boolean isUseInAddress = addressRepository.existsByProvinceIdOrDistrictIdOrCommuneId(id, id, id);
+        if (isUseInAddress) {
+            throw new BadRequestException("Already have address use this nation!!", ErrorCode.NATION_ERROR_UNABLE_DELETE);
+        }
         if (nation.getKind().equals(MgrConstant.NATION_TYPE_PROVINCE)) {
             nationRepository.deleteCommunesByProvinceId(id);
             nationRepository.deleteByParentId(id);

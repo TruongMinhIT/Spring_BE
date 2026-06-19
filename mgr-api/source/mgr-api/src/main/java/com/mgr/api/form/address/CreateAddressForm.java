@@ -29,7 +29,6 @@ public class CreateAddressForm {
     @ApiModelProperty(name = "districtId", required = true)
     private Long districtId;
 
-    @NotNull(message = "Commune is requiredId")
-    @ApiModelProperty(name = "communeId", required = true)
+    @ApiModelProperty(name = "communeId")
     private Long communeId;
 }

@@ -79,6 +79,7 @@ public class ErrorCode {
     public static final String NATION_ERROR_NAME_EXISTED = "ERROR-NATION-0001";
     public static final String NATION_ERROR_INVALID= "ERROR-NATION-0002";
     public static final String NATION_ERROR_INVALID_PARENT= "ERROR-NATION-0003";
+    public static final String NATION_ERROR_UNABLE_DELETE = "ERROR-NATION-0004";
 
     /**
      * Address

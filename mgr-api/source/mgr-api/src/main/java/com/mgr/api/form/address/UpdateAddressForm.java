@@ -28,6 +28,6 @@ public class UpdateAddressForm {
     @ApiModelProperty(name = "districtId", required = true)
     private Long districtId;
 
-    @ApiModelProperty(name = "communeId", required = true)
+    @ApiModelProperty(name = "communeId")
     private Long communeId;
 }
