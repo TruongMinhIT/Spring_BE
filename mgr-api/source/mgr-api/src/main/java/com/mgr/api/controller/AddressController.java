@@ -19,6 +19,7 @@ import com.mgr.api.repository.NationRepository;
 import com.mgr.api.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -35,23 +36,23 @@ import java.util.List;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @Slf4j
 public class AddressController extends ABasicController {
-    private final AddressRepository addressRepository;
-    private final AddressMapper addressMapper;
-    private final UserRepository userRepository;
-    private final NationRepository nationRepository;
+    @Autowired
+    private AddressRepository addressRepository;
 
-    public AddressController(AddressRepository addressRepository, AddressMapper addressMapper, UserRepository userRepository, NationRepository nationRepository) {
-        this.addressRepository = addressRepository;
-        this.addressMapper = addressMapper;
-        this.userRepository = userRepository;
-        this.nationRepository = nationRepository;
-    }
+    @Autowired
+    private AddressMapper addressMapper;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private NationRepository nationRepository;
 
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADDR_V')")
     public ApiMessageDto<AddressDto> getAddress(@PathVariable("id") Long id) {
         Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Nation not found", ErrorCode.ADDRESS_ERROR_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("Address not found", ErrorCode.ADDRESS_ERROR_NOT_FOUND));
         return makeSuccessResponse(addressMapper.fromEntityToAddressDto(address), "Get address success");
     }
 
@@ -64,18 +65,14 @@ public class AddressController extends ABasicController {
                 .orElseThrow(() -> new NotFoundException("User not found", ErrorCode.USER_ERROR_NOT_FOUND));
         Address address = addressMapper.fromCreateAddressFormToEntity(createAddressForm);
         address.setUser(user);
-        address.setStatus(MgrConstant.STATUS_ACTIVE);
         validateAndSetNationHierarchy(address, createAddressForm.getProvinceId(), createAddressForm.getDistrictId(), createAddressForm.getCommuneId());
         //Logic is default
-        long addressCount = addressRepository.countByUserId(getCurrentUser());
-        if (addressCount == 0) {
-            address.setIsDefault(true);
-        } else if (createAddressForm.getIsDefault()) {
+        boolean hasAddress = addressRepository.existsByUserId(userId);
+        boolean shouldBeDefault = !hasAddress || createAddressForm.getIsDefault();
+        if (shouldBeDefault && hasAddress) {
             addressRepository.resetDefaultAddressByUserId(userId);
-            address.setIsDefault(true);
-        } else {
-            address.setIsDefault(false);
         }
+        address.setIsDefault(shouldBeDefault);
         addressRepository.save(address);
         return makeSuccessResponse("Create address success");
     }
@@ -104,10 +101,12 @@ public class AddressController extends ABasicController {
         }
         validateAndSetNationHierarchy(address, provinceId, districtId, communeId);
         if (updateAddressForm.getIsDefault() != null) {
-            if (updateAddressForm.getIsDefault() && !address.getIsDefault()) {
+            boolean isRequestedDefault = updateAddressForm.getIsDefault();
+            boolean isCurrentlyDefault = address.getIsDefault();
+            if (isRequestedDefault && !isCurrentlyDefault) {
                 addressRepository.resetDefaultAddressByUserId(userId);
                 address.setIsDefault(true);
-            } else if (!updateAddressForm.getIsDefault() && address.getIsDefault()) {
+            } else if (!isRequestedDefault && isCurrentlyDefault) {
                 throw new BadRequestException("Cannot unset default address directly. Please set another address as default.");
             }
         }
@@ -171,8 +170,7 @@ public class AddressController extends ABasicController {
                 throw new BadRequestException("Invalid Commune Id", ErrorCode.NATION_ERROR_INVALID);
             }
             address.setCommune(commune);
-        }
-        else {
+        } else {
             address.setCommune(null);
         }
     }

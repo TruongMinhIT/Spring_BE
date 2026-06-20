@@ -20,6 +20,7 @@ import com.mgr.api.repository.TagRepository;
 import com.mgr.api.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -37,21 +38,20 @@ import java.util.List;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @Slf4j
 public class PostController extends ABasicController{
-    private final PostRepository postRepository;
-    private final PostMapper postMapper;
-    private final UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
-    private final TagRepository tagRepository;
+    @Autowired
+    private PostRepository postRepository;
 
+    @Autowired
+    private PostMapper postMapper;
 
+    @Autowired
+    private UserRepository userRepository;
 
-    public PostController(PostRepository postRepository, PostMapper postMapper, UserRepository userRepository, CategoryRepository categoryRepository, TagRepository tagRepository) {
-        this.postRepository = postRepository;
-        this.postMapper = postMapper;
-        this.userRepository = userRepository;
-        this.categoryRepository = categoryRepository;
-        this.tagRepository = tagRepository;
-    }
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private TagRepository tagRepository;
 
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('POST_V')")

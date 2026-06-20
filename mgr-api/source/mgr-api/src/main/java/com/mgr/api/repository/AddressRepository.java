@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface AddressRepository extends JpaRepository<Address, Long>, JpaSpecificationExecutor<Address> {
-    Long countByUserId(Long userId);
+    Boolean existsByUserId(Long userId);
 
     List<Address> findAllByUserIdOrderByIsDefaultDesc(Long userId);
 

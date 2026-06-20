@@ -16,6 +16,7 @@ import com.mgr.api.repository.AddressRepository;
 import com.mgr.api.repository.NationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -31,15 +32,14 @@ import javax.validation.Valid;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @Slf4j
 public class NationController extends ABasicController {
-    private final NationRepository nationRepository;
-    private final NationMapper nationMapper;
-    private final AddressRepository addressRepository;
+    @Autowired
+    private NationRepository nationRepository;
 
-    public NationController(NationRepository nationRepository, NationMapper nationMapper, AddressRepository addressRepository) {
-        this.nationRepository = nationRepository;
-        this.nationMapper = nationMapper;
-        this.addressRepository = addressRepository;
-    }
+    @Autowired
+    private NationMapper nationMapper;
+
+    @Autowired
+    private AddressRepository addressRepository;
 
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('NAT_V')")

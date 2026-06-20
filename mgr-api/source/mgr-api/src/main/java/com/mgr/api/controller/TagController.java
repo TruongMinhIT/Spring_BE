@@ -13,6 +13,7 @@ import com.mgr.api.model.Tag;
 import com.mgr.api.model.criteria.TagCriteria;
 import com.mgr.api.repository.TagRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -28,13 +29,11 @@ import javax.validation.Valid;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @Slf4j
 public class TagController extends ABasicController {
-    private final TagRepository tagRepository;
-    private final TagMapper tagMapper;
+    @Autowired
+    private TagRepository tagRepository;
 
-    public TagController(TagRepository tagRepository, TagMapper tagMapper) {
-        this.tagRepository = tagRepository;
-        this.tagMapper = tagMapper;
-    }
+    @Autowired
+    private TagMapper tagMapper;
 
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('TAG_V')")
