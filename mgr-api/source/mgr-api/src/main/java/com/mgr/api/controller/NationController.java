@@ -26,6 +26,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/nation")
@@ -141,11 +142,9 @@ public class NationController extends ABasicController {
 
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('NAT_L')")
-    public ApiMessageDto<ResponseListDto<NationDto>> listNation(NationCriteria nationCriteria, Pageable pageable) {
+    public ApiMessageDto<ResponseListDto<List<NationDto>>> listNation(NationCriteria nationCriteria, Pageable pageable) {
         Page<Nation> page = nationRepository.findAll(nationCriteria.getSpecification(), pageable);
-        ResponseListDto<NationDto> responseListDto = new ResponseListDto(nationMapper.fromEntityToNationDtoList(page.getContent()),
-                page.getTotalElements(),
-                page.getTotalPages());
+        ResponseListDto<List<NationDto>> responseListDto = makeResponseListDto(page, nationMapper::fromEntityToNationDtoList);
         return makeSuccessResponse(responseListDto, "Nation list success");
     }
 

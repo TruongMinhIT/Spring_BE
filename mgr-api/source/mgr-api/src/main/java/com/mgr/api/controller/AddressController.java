@@ -116,12 +116,9 @@ public class AddressController extends ABasicController {
 
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADDR_L')")
-    public ApiMessageDto<ResponseListDto<AddressDto>> listAddress(AddressCriteria criteria, Pageable pageable) {
+    public ApiMessageDto<ResponseListDto<List<AddressDto>>> listAddress(AddressCriteria criteria, Pageable pageable) {
         Page<Address> page = addressRepository.findAll(criteria.getSpecification(), pageable);
-        ResponseListDto<AddressDto> responseListDto = new ResponseListDto(addressMapper.fromEntityToAddressDtoList(page.getContent()),
-                page.getTotalElements(),
-                page.getTotalPages()
-        );
+        ResponseListDto<List<AddressDto>> responseListDto = makeResponseListDto(page, addressMapper::fromEntityToAddressDtoList);
         return makeSuccessResponse(responseListDto, "Get address list success");
     }
 
