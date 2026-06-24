@@ -1,6 +1,7 @@
 package com.mgr.api.config;
 
 import com.mgr.api.component.LogInterceptor;
+import com.mgr.api.component.TenantInterceptor;
 import com.mgr.api.constant.MgrConstant;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -32,10 +33,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private LogInterceptor logInterceptor;
 
+    @Autowired
+    private TenantInterceptor tenantInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         String[] exclusive = {"/v1/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**"};
         registry.addInterceptor(logInterceptor).addPathPatterns("/**").excludePathPatterns(exclusive);
+        // Bắt mọi request bắt đầu bằng /v1/ để check tenant
+        registry.addInterceptor(tenantInterceptor).addPathPatterns("/v1/**");
     }
 
     @Override

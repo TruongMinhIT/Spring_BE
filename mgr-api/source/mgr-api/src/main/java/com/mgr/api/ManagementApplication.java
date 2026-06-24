@@ -3,6 +3,7 @@ package com.mgr.api;
 import com.mgr.api.component.AuditorAwareImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -15,7 +16,7 @@ import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.TimeZone;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @EnableAsync
 @EnableAspectJAutoProxy

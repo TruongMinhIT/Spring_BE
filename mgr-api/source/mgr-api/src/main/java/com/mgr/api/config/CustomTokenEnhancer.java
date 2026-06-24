@@ -3,6 +3,7 @@ package com.mgr.api.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mgr.api.dto.AccountForTokenDto;
 import com.mgr.api.model.TablePrefix;
+import com.mgr.api.ternant.TenantContext;
 import com.mgr.api.utils.ZipUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -34,12 +35,21 @@ public class CustomTokenEnhancer implements TokenEnhancer {
         String grantType = requestParams.get("grant_type");
         String username = authentication.getName();
         String email = requestParams.get("email");
+        String tenantId = requestParams.get("tenant"); // Luồng grantype Password
+        if (tenantId == null) {
+            tenantId = requestParams.get("tenantId");
+        }
+        if (authentication.getDetails() == null) {
+            ((OAuth2Authentication) authentication).setDetails(tenantId);
+        }
+        TenantContext.setCurrentTenant(tenantId);
+
         if (SecurityConstant.GRANT_TYPE_PASSWORD.equals(grantType)) {
-            additionalInfo = getAdditionalInfo(null, username, grantType, null);
+            additionalInfo = getAdditionalInfo(tenantId, username, grantType, null);
         } else if (SecurityConstant.GRANT_TYPE_USER.equals(grantType)) {
-            additionalInfo = getAdditionalInfoUser(null, email, grantType, null);
+            additionalInfo = getAdditionalInfoUser(tenantId, email, grantType, null);
         } else {
-            additionalInfo = getAdditionalInfoCustom(null, username, grantType, null);
+            additionalInfo = getAdditionalInfoCustom(tenantId, username, grantType, null);
         }
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo); //Lấy chỗi đã nén gán
         return accessToken;
@@ -59,7 +69,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
             Integer tabletKind = -1;
             Long orderId = -1L;
             Boolean isSuperAdmin = a.getIsSuperAdmin();
-            String tenantId = "";
+            String tenantId = tenantName != null ? tenantName : "";
             additionalInfo.put("user_id", accountId);
             additionalInfo.put("user_kind", a.getKind());
             additionalInfo.put("grant_type", grantType == null ? SecurityConstant.GRANT_TYPE_PASSWORD : grantType);
@@ -95,7 +105,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
             Integer tabletKind = -1;
             Long orderId = -1L;
             Boolean isSuperAdmin = a.getIsSuperAdmin();
-            String tenantId = "";
+            String tenantId = tenantName != null ? tenantName : "";
             additionalInfo.put("user_id", accountId);
             additionalInfo.put("user_kind", a.getKind());
             additionalInfo.put("grant_type", grantType == null ? SecurityConstant.GRANT_TYPE_PASSWORD : grantType);
@@ -131,7 +141,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
             Integer tabletKind = -1;
             Long orderId = -1L;
             Boolean isSuperAdmin = a.getIsSuperAdmin();
-            String tenantId = "";
+            String tenantId = tenantName != null ? tenantName : "";
             additionalInfo.put("user_id", accountId);
             additionalInfo.put("user_kind", a.getKind());
             additionalInfo.put("grant_type", grantType == null ? SecurityConstant.GRANT_TYPE_PASSWORD : grantType);
