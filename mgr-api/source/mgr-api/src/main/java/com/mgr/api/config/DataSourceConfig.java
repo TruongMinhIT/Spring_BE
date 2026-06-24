@@ -2,6 +2,8 @@ package com.mgr.api.config;
 
 import com.mgr.api.ternant.TenantRoutingDataSource;
 import com.zaxxer.hikari.HikariDataSource;
+import liquibase.integration.spring.SpringLiquibase;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -15,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+@Slf4j
 @Configuration
 public class DataSourceConfig {
     private final String defaultTenant = "tenant_1";
@@ -42,6 +45,8 @@ public class DataSourceConfig {
                         dataSource.setMaximumPoolSize(5);
                         // Save to Map: key = "tenant_1", value = DataSource of tenant_1
                         resolvedDataSource.put(tenantId, dataSource);
+                        log.info("Run liquibase structure for: {}", tenantId);
+                        runLiquibase(dataSource);
                     } catch (IOException exp) {
                         throw new RuntimeException("Error when read tenant config: " + exp.getMessage());
                     }
@@ -55,5 +60,19 @@ public class DataSourceConfig {
 
         dataSource.afterPropertiesSet();
         return dataSource;
+    }
+
+    private void runLiquibase(DataSource dataSource) {
+        try {
+            SpringLiquibase liquibase = new SpringLiquibase();
+            liquibase.setDataSource(dataSource);
+            liquibase.setChangeLog("classpath:liquibase/db.changelog-master.xml");
+            liquibase.setContexts("dev");
+            liquibase.setDropFirst(false);
+            liquibase.setShouldRun(true);
+            liquibase.afterPropertiesSet();
+        } catch (Exception exp) {
+            log.error("Error run liquibase: ", exp);
+        }
     }
 }
