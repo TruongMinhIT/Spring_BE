@@ -1,7 +1,6 @@
 package com.mgr.api.config;
 
 import com.google.common.io.ByteStreams;
-import com.mgr.api.ternant.TenantContext;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.MediaType;
@@ -35,33 +34,21 @@ public class JsonToUrlEncodedAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("Token request content type: {}", request.getContentType());
-        try {
-            if (Objects.equals(request.getServletPath(), "/api/token") && request.getContentType() != null && request.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
+        if (Objects.equals(request.getServletPath(), "/api/token") && request.getContentType() != null && request.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
 
-                byte[] json = ByteStreams.toByteArray(request.getInputStream());
+            byte[] json = ByteStreams.toByteArray(request.getInputStream());
 
-                Map<String, String> jsonMap = new ObjectMapper().readValue(json, Map.class);
-
-                // Lấy tenant từ JSON body và set vào Context
-                if (jsonMap.containsKey("tenant") && jsonMap.get("tenant") != null) {
-                    TenantContext.setCurrentTenant(String.valueOf(jsonMap.get("tenant")));
-                }
-
-                Map<String, String[]> parameters =
-                        jsonMap.entrySet().stream()
-                                .collect(Collectors.toMap(
-                                        Map.Entry::getKey,
-                                        e -> new String[]{e.getValue()})
-                                );
-                HttpServletRequest requestWrapper = new RequestWrapper(request, parameters);
-                filterChain.doFilter(requestWrapper, response);
-            } else {
-                filterChain.doFilter(request, response);
-            }
-        } finally {
-            if (Objects.equals(request.getServletPath(), "/api/token")) {
-                TenantContext.clear();
-            }
+            Map<String, String> jsonMap = new ObjectMapper().readValue(json, Map.class);
+            Map<String, String[]> parameters =
+                    jsonMap.entrySet().stream()
+                            .collect(Collectors.toMap(
+                                    Map.Entry::getKey,
+                                    e -> new String[]{e.getValue()})
+                            );
+            HttpServletRequest requestWrapper = new RequestWrapper(request, parameters);
+            filterChain.doFilter(requestWrapper, response);
+        } else {
+            filterChain.doFilter(request, response);
         }
     }
 

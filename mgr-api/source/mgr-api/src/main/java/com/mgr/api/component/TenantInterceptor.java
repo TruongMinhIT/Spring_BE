@@ -1,5 +1,6 @@
 package com.mgr.api.component;
 
+import com.mgr.api.config.SecurityConstant;
 import com.mgr.api.jwt.MgrJwt;
 import com.mgr.api.service.impl.UserServiceImpl;
 import com.mgr.api.ternant.TenantContext;
@@ -11,6 +12,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -21,11 +24,36 @@ public class TenantInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         try {
-            // Read jwtInfo from SecurityContextHolder
+            // Lấy X-Tenant từ header của request do Client gửi lên
+            String requestedTenant = request.getHeader(SecurityConstant.TENANT_HEADER);
+            // Đọc jwtInfo từ SecurityContextHolder
             MgrJwt jwtInfo = userService.getAddInfoFromToken();
-            // If decode & it has tenantId → set it to ThreadLocal
-            if (jwtInfo != null && StringUtils.isNotBlank(jwtInfo.getTenantId())) {
-                TenantContext.setCurrentTenant(jwtInfo.getTenantId());
+
+            if (jwtInfo != null) {
+                // Danh sách tenant từ token
+                String allowedTenantsStr = jwtInfo.getTenantId();
+                log.info("[TenantInterceptor] accountId={}, allowedTenantsStr='{}'", jwtInfo.getAccountId(), allowedTenantsStr);
+
+                if (StringUtils.isNotBlank(requestedTenant)) {
+                    if (StringUtils.isNotBlank(allowedTenantsStr)) {
+                        // Tách chuỗi bằng dấu ":" thành danh sách List<String>
+                        List<String> allowedTenants = Arrays.asList(allowedTenantsStr.split(":"));
+                        if (allowedTenants.contains(requestedTenant)) {
+                            TenantContext.setCurrentTenant(requestedTenant);
+                            return true;
+                        }
+                    }
+
+                    // Nếu không có quyền -> Chặn request -> trả về lỗi 403
+                    log.warn("[TenantInterceptor] Access Denied: accountId={}, allowedTenants='{}', requestedTenant='{}'",
+                            jwtInfo.getAccountId(), jwtInfo.getTenantId(), requestedTenant);
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write("Access Denied: You do not have permission for this tenant");
+                    return false;
+                } else {
+                    // Nếu không truyền X-Tenant -> Master DB
+                    TenantContext.clear();
+                }
             }
         } catch (Exception exp) {
             log.error("Lỗi set Tenant: ", exp);

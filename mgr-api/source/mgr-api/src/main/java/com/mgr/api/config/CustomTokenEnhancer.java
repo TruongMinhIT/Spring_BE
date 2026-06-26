@@ -35,21 +35,12 @@ public class CustomTokenEnhancer implements TokenEnhancer {
         String grantType = requestParams.get("grant_type");
         String username = authentication.getName();
         String email = requestParams.get("email");
-        String tenantId = requestParams.get("tenant"); // Luồng grantype Password
-        if (tenantId == null) {
-            tenantId = requestParams.get("tenantId");
-        }
-        if (authentication.getDetails() == null) {
-            ((OAuth2Authentication) authentication).setDetails(tenantId);
-        }
-        TenantContext.setCurrentTenant(tenantId);
-
         if (SecurityConstant.GRANT_TYPE_PASSWORD.equals(grantType)) {
-            additionalInfo = getAdditionalInfo(tenantId, username, grantType, null);
+            additionalInfo = getAdditionalInfo(null, username, grantType, null);
         } else if (SecurityConstant.GRANT_TYPE_USER.equals(grantType)) {
-            additionalInfo = getAdditionalInfoUser(tenantId, email, grantType, null);
+            additionalInfo = getAdditionalInfoUser(null, email, grantType, null);
         } else {
-            additionalInfo = getAdditionalInfoCustom(tenantId, username, grantType, null);
+            additionalInfo = getAdditionalInfoCustom(null, username, grantType, null);
         }
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo); //Lấy chỗi đã nén gán
         return accessToken;
@@ -69,7 +60,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
             Integer tabletKind = -1;
             Long orderId = -1L;
             Boolean isSuperAdmin = a.getIsSuperAdmin();
-            String tenantId = tenantName != null ? tenantName : "";
+            String tenantId = "";
             additionalInfo.put("user_id", accountId);
             additionalInfo.put("user_kind", a.getKind());
             additionalInfo.put("grant_type", grantType == null ? SecurityConstant.GRANT_TYPE_PASSWORD : grantType);
@@ -105,7 +96,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
             Integer tabletKind = -1;
             Long orderId = -1L;
             Boolean isSuperAdmin = a.getIsSuperAdmin();
-            String tenantId = tenantName != null ? tenantName : "";
+            String tenantId = "";
             additionalInfo.put("user_id", accountId);
             additionalInfo.put("user_kind", a.getKind());
             additionalInfo.put("grant_type", grantType == null ? SecurityConstant.GRANT_TYPE_PASSWORD : grantType);
@@ -141,7 +132,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
             Integer tabletKind = -1;
             Long orderId = -1L;
             Boolean isSuperAdmin = a.getIsSuperAdmin();
-            String tenantId = tenantName != null ? tenantName : "";
+            String tenantId = getAllowedTenants(accountId);
             additionalInfo.put("user_id", accountId);
             additionalInfo.put("user_kind", a.getKind());
             additionalInfo.put("grant_type", grantType == null ? SecurityConstant.GRANT_TYPE_PASSWORD : grantType);
@@ -189,5 +180,19 @@ public class CustomTokenEnhancer implements TokenEnhancer {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private String getAllowedTenants(Long accountId) {
+        try {
+            String query = "SELECT name FROM " + TablePrefix.PREFIX_TABLE + "db_config WHERE user_id = ?";
+            log.debug("SQL get list tenant per user: {}", query);
+            List<String> tenants = jdbcTemplate.queryForList(query, new Object[]{accountId}, String.class);
+            if (tenants != null && !tenants.isEmpty()) {
+                return String.join(":", tenants);
+            }
+        } catch (Exception exp) {
+            log.error("Error when query tenant list: ", exp);
+        }
+        return "";
     }
 }

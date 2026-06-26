@@ -1,4 +1,4 @@
-package com.mgr.api.repository;
+package com.mgr.api.repository.tenant;
 
 import com.mgr.api.model.Address;
 import org.springframework.data.jpa.repository.JpaRepository;

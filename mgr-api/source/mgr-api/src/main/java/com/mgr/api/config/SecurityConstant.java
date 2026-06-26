@@ -5,4 +5,5 @@ public class SecurityConstant {
     public static final String GRANT_TYPE_CUSTOM = "custom";
     public static final String GRANT_TYPE_USER = "user";
     public static final String BEARER_TOKEN_TYPE = "Bearer ";
+    public static final String TENANT_HEADER = "X-Tenant";
 }
