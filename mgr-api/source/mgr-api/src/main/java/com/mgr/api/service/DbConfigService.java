@@ -1,7 +1,7 @@
 package com.mgr.api.service;
 
 import com.mgr.api.model.DbConfig;
-import com.mgr.api.ternant.TenantRoutingDataSource;
+import com.mgr.api.ternant.CustomMultiTenantConnectionProvider;
 import com.zaxxer.hikari.HikariDataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import java.sql.Statement;
 @Slf4j
 public class DbConfigService {
     @Autowired
-    private TenantRoutingDataSource tenantRoutingDataSource;
+    private CustomMultiTenantConnectionProvider connectionProvider;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -27,17 +27,17 @@ public class DbConfigService {
         createPhysicalDatabase(config);
         HikariDataSource newDataSource = createDataSource(config);
         runLiquibase(newDataSource);
-        tenantRoutingDataSource.addDataSource(config.getName(), newDataSource); //Cập nhật Map và resolvedDataSources
+        connectionProvider.addOrUpdateTenantDataSource(config.getName(), newDataSource); // Cập nhật Map và resolvedDataSources
     }
 
     public void updateDataSource(DbConfig config) {
         HikariDataSource newDataSource = createDataSource(config);
-        tenantRoutingDataSource.updateDataSource(config.getName(), newDataSource);
+        connectionProvider.addOrUpdateTenantDataSource(config.getName(), newDataSource);
         log.info("Update Datasource success for Tenant: {}", config.getName());
     }
 
     public void removeDataSource(String tenantName) {
-        tenantRoutingDataSource.removeDataSource(tenantName);
+        connectionProvider.removeTenantDataSource(tenantName);
         log.info("Delete Datasource success for Tenant: {}", tenantName);
     }
 
@@ -53,12 +53,19 @@ public class DbConfigService {
         }
     }
 
-    private HikariDataSource createDataSource(DbConfig config) {
+    public HikariDataSource createDataSource(DbConfig config) {
         HikariDataSource ds = new HikariDataSource();
         ds.setJdbcUrl(config.getUrl());
         ds.setUsername(config.getUsername());
         ds.setPassword(config.getPassword());
         ds.setDriverClassName(config.getDriverClassName());
+
+        // Tối ưu Pool Size cho Multi-Tenant
+        ds.setMinimumIdle(0); // Thu hồi toàn bộ connection nếu tenant không hoạt động
+        ds.setMaximumPoolSize(10); // Số lượng kết nối tối đa cho mỗi tenant
+        ds.setIdleTimeout(300000); // 5 phút (Đóng connection nếu nhàn rỗi quá 5 phút)
+        ds.setConnectionTimeout(20000); // Timeout 20s khi không lấy được connection
+
         return ds;
     }
 
