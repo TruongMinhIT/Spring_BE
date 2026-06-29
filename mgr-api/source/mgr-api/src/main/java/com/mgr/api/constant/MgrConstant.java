@@ -28,6 +28,12 @@ public class MgrConstant {
     public static final int NATION_TYPE_DISTRICT = 2;
     public static final int NATION_TYPE_COMMUNE = 3;
 
+    public static final int UPLOAD_FILE_AVATAR = 1;
+    public static final int UPLOAD_FILE_LOGO = 2;
+
+    public static final String UPLOAD_FILE_AVATAR_STR = "AVATAR";
+    public static final String UPLOAD_FILE_LOGO_STR = "LOGO";
+
     private MgrConstant() {
         throw new IllegalStateException("Utility class");
     }
