@@ -3,6 +3,7 @@ package com.mgr.api.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mgr.api.dto.AccountForTokenDto;
 import com.mgr.api.model.TablePrefix;
+import com.mgr.api.ternant.TenantContext;
 import com.mgr.api.utils.ZipUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -131,7 +132,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
             Integer tabletKind = -1;
             Long orderId = -1L;
             Boolean isSuperAdmin = a.getIsSuperAdmin();
-            String tenantId = "";
+            String tenantId = getAllowedTenants(accountId);
             additionalInfo.put("user_id", accountId);
             additionalInfo.put("user_kind", a.getKind());
             additionalInfo.put("grant_type", grantType == null ? SecurityConstant.GRANT_TYPE_PASSWORD : grantType);
@@ -179,5 +180,19 @@ public class CustomTokenEnhancer implements TokenEnhancer {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private String getAllowedTenants(Long accountId) {
+        try {
+            String query = "SELECT name FROM " + TablePrefix.PREFIX_TABLE + "db_config WHERE user_id = ?";
+            log.debug("SQL get list tenant per user: {}", query);
+            List<String> tenants = jdbcTemplate.queryForList(query, new Object[]{accountId}, String.class);
+            if (tenants != null && !tenants.isEmpty()) {
+                return String.join(":", tenants);
+            }
+        } catch (Exception exp) {
+            log.error("Error when query tenant list: ", exp);
+        }
+        return "";
     }
 }

@@ -3,7 +3,7 @@ package com.mgr.api.service.impl;
 import com.mgr.api.constant.MgrConstant;
 import com.mgr.api.jwt.MgrJwt;
 import com.mgr.api.model.Account;
-import com.mgr.api.repository.AccountRepository;
+import com.mgr.api.repository.master.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

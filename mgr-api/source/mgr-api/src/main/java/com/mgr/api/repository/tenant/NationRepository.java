@@ -1,4 +1,4 @@
-package com.mgr.api.repository;
+package com.mgr.api.repository.tenant;
 
 import com.mgr.api.model.Nation;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,8 +7,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 public interface NationRepository extends JpaRepository<Nation, Long>, JpaSpecificationExecutor<Nation> {
     boolean existsByNameAndParentIsNull(String name);

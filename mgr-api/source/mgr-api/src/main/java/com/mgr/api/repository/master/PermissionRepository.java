@@ -1,4 +1,4 @@
-package com.mgr.api.repository;
+package com.mgr.api.repository.master;
 
 import com.mgr.api.model.Permission;
 import org.springframework.data.jpa.repository.JpaRepository;

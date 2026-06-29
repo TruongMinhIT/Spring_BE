@@ -11,7 +11,7 @@ import com.mgr.api.form.tag.UpdateTagForm;
 import com.mgr.api.mapper.TagMapper;
 import com.mgr.api.model.Tag;
 import com.mgr.api.model.criteria.TagCriteria;
-import com.mgr.api.repository.TagRepository;
+import com.mgr.api.repository.tenant.TagRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

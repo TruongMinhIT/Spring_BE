@@ -86,4 +86,10 @@ public class ErrorCode {
      */
     public static final String ADDRESS_ERROR_NOT_FOUND = "ERROR-ADDRESS-0000";
     public static final String ADDRESS_ERROR_UNABLE_UPDATE = "ERROR-ADDRESS-0001";
+
+    /**
+     * DbConfig
+     */
+    public static final String DB_CONFIG_ERROR_NOT_FOUND = "ERROR-DBCONFIG-0000";
+    public static final String DB_CONFIG_ERROR_NAME_EXISTED = "ERROR-DBCONFIG-0001";
 }
