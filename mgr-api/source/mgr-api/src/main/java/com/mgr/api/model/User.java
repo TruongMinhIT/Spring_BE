@@ -1,13 +1,13 @@
 package com.mgr.api.model;
 
-import com.mgr.api.validation.ValidGender;
-import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = TablePrefix.PREFIX_TABLE + "user")
@@ -25,4 +25,7 @@ public class User extends Auditable<String>{
 
     @Column(name = "birth_day")
     private Date dateOfBirth;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DbConfig> dbConfigs = new ArrayList<>();
 }

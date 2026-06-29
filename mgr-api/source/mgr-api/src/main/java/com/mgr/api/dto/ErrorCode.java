@@ -71,4 +71,25 @@ public class ErrorCode {
     public static final String POST_ERROR_NOT_FOUND = "ERROR-POST-0000";
     public static final String POST_ERROR_UNABLE_DELETE = "ERROR-POST-0001";
     public static final String POST_ERROR_UNABLE_UPDATE = "ERROR-POST-0002";
+
+    /**
+     * Nation
+     */
+    public static final String NATION_ERROR_NOT_FOUND = "ERROR-NATION-0000";
+    public static final String NATION_ERROR_NAME_EXISTED = "ERROR-NATION-0001";
+    public static final String NATION_ERROR_INVALID= "ERROR-NATION-0002";
+    public static final String NATION_ERROR_INVALID_PARENT= "ERROR-NATION-0003";
+    public static final String NATION_ERROR_UNABLE_DELETE = "ERROR-NATION-0004";
+
+    /**
+     * Address
+     */
+    public static final String ADDRESS_ERROR_NOT_FOUND = "ERROR-ADDRESS-0000";
+    public static final String ADDRESS_ERROR_UNABLE_UPDATE = "ERROR-ADDRESS-0001";
+
+    /**
+     * DbConfig
+     */
+    public static final String DB_CONFIG_ERROR_NOT_FOUND = "ERROR-DBCONFIG-0000";
+    public static final String DB_CONFIG_ERROR_NAME_EXISTED = "ERROR-DBCONFIG-0001";
 }

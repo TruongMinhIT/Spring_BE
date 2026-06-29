@@ -9,7 +9,7 @@ import com.mgr.api.form.permission.CreatePermissionForm;
 import com.mgr.api.mapper.PermissionMapper;
 import com.mgr.api.model.Permission;
 import com.mgr.api.model.criteria.PermissionCriteria;
-import com.mgr.api.repository.PermissionRepository;
+import com.mgr.api.repository.master.PermissionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

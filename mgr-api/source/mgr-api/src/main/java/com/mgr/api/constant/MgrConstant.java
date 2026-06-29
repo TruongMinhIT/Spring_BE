@@ -23,6 +23,11 @@ public class MgrConstant {
 
     public static final int POST_CONDITION_STATUS_BRAND_NEW = 1;
     public static final int POST_CONDITION_STATUS_USED = 2;
+
+    public static final int NATION_TYPE_PROVINCE = 1;
+    public static final int NATION_TYPE_DISTRICT = 2;
+    public static final int NATION_TYPE_COMMUNE = 3;
+
     private MgrConstant() {
         throw new IllegalStateException("Utility class");
     }

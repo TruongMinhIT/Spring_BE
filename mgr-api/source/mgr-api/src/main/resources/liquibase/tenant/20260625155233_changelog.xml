@@ -1,0 +1,116 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="Authentication" id="1782402762680-1">
+        <createTable tableName="db_mgr_category">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT" defaultValue="1"/>
+
+            <column name="name" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="parent_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Authentication" id="1782402762680-2">
+        <createTable tableName="db_mgr_tag">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT" defaultValue="1"/>
+
+            <column name="name" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="slug" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Authentication" id="1782402762680-3">
+        <createTable tableName="db_mgr_post">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT" defaultValue="1"/>
+
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="description" type="TEXT"/>
+            <column name="price" type="DECIMAL(19,2)"/>
+            <column name="condition_status" type="INT"/>
+            <column name="is_free" type="BOOLEAN"/>
+            <column name="type" type="INT"/>
+
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="db_mgr_post" baseColumnNames="category_id"
+                                 constraintName="fk_post_category" referencedTableName="db_mgr_category"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet author="Authentication" id="1782402762680-4">
+        <createTable tableName="db_mgr_post_tag">
+            <column name="post_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="db_mgr_post_tag" baseColumnNames="post_id"
+                                 constraintName="fk_post_tag_post" referencedTableName="db_mgr_post"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="db_mgr_post_tag" baseColumnNames="tag_id"
+                                 constraintName="fk_post_tag_tag" referencedTableName="db_mgr_tag"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>
