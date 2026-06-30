@@ -95,11 +95,17 @@ public class UserController extends ABasicController{
         if(!group.getKind().equals(MgrConstant.GROUP_KIND_USER)){
             throw new BadRequestException("Group not for user", ErrorCode.USER_ERROR_UNABLE_CREATE);
         }
-
         Account account = accountMapper.fromCreateUserFormToAccount(createUserForm);
         account.setPassword(passwordEncoder.encode(createUserForm.getPassword()));
         account.setKind(MgrConstant.USER_KIND_USER);
         account.setGroup(group);
+        String avatar = createUserForm.getAvatarPath();
+        if (StringUtils.isNoneBlank(avatar)) {
+            mgrApiService.validateFile(avatar);
+            account.setAvatarPath(avatar);
+        } else {
+            account.setAvatarPath(null);
+        }
 
         User user = userMapper.fromCreateUserFormToEntity(createUserForm);
         user.setAccount(account);
@@ -144,9 +150,11 @@ public class UserController extends ABasicController{
         if (updateUserForm.getStatus() != null) {
             account.setStatus(updateUserForm.getStatus());
         }
-        if (StringUtils.isNoneBlank(updateUserForm.getAvatarPath())){
-            if (account.getAvatarPath()!=null && !updateUserForm.getAvatarPath().equals(account.getAvatarPath())){
-                //delete old image
+        if (StringUtils.isNoneBlank(updateUserForm.getAvatarPath())
+                && !updateUserForm.getAvatarPath().equals(account.getAvatarPath())) {
+            mgrApiService.validateFile(updateUserForm.getAvatarPath());
+            if (StringUtils.isNoneBlank(account.getAvatarPath())) {
+                // delete old image
                 mgrApiService.deleteFile(account.getAvatarPath());
             }
             account.setAvatarPath(updateUserForm.getAvatarPath());
@@ -235,8 +243,11 @@ public class UserController extends ABasicController{
         if (StringUtils.isNoneBlank(updateUserProfileForm.getFullName())) {
             userAccount.setFullName(updateUserProfileForm.getFullName());
         }
-        if (StringUtils.isNoneBlank(updateUserProfileForm.getAvatarPath())) {
-            if (userAccount.getAvatarPath() != null && !userAccount.getAvatarPath().equals(updateUserProfileForm.getAvatarPath())) {
+        if (StringUtils.isNoneBlank(updateUserProfileForm.getAvatarPath())
+                && !updateUserProfileForm.getAvatarPath().equals(userAccount.getAvatarPath())) {
+            mgrApiService.validateFile(updateUserProfileForm.getAvatarPath());
+            if (StringUtils.isNoneBlank(userAccount.getAvatarPath())) {
+                // delete old image
                 mgrApiService.deleteFile(userAccount.getAvatarPath());
             }
             userAccount.setAvatarPath(updateUserProfileForm.getAvatarPath());

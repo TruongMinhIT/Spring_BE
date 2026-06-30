@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = FileUploadValidator.class)
 public @interface ValidFileUploadKind {
-    int[] anyOf() default {MgrConstant.UPLOAD_FILE_AVATAR, MgrConstant.UPLOAD_FILE_LOGO};
+    int[] anyOf() default {MgrConstant.UPLOAD_FILE_AVATAR, MgrConstant.UPLOAD_FILE_LOGO, MgrConstant.UPLOAD_FILE_IMAGE_THUMBNAIL};
 
     boolean allowNull() default false;
 

@@ -30,9 +30,12 @@ public class MgrConstant {
 
     public static final int UPLOAD_FILE_AVATAR = 1;
     public static final int UPLOAD_FILE_LOGO = 2;
+    public static final int UPLOAD_FILE_IMAGE_THUMBNAIL = 3;
+
 
     public static final String UPLOAD_FILE_AVATAR_STR = "AVATAR";
     public static final String UPLOAD_FILE_LOGO_STR = "LOGO";
+    public static final String UPLOAD_FILE_IMAGE_THUMBNAIL_STR = "THUMBNAIL";
 
     private MgrConstant() {
         throw new IllegalStateException("Utility class");

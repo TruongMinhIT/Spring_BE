@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @ApiModel
 public class CreateFileUploadForm {
     @ValidFileUploadKind
-    @ApiModelProperty(name = "kind", required = true, notes = "1: Avatar, 2:Logo")
+    @ApiModelProperty(name = "kind", required = true, notes = "1: Avatar, 2:Logo, 3:Thumbnail")
     private Integer kind;
 
     @ApiModelProperty(name = "file", required = true)

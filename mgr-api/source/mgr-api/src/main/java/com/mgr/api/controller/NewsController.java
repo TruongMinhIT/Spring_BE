@@ -75,6 +75,12 @@ public class NewsController extends ABasicController {
         News news = newsMapper.fromCreateNewsFormToEntity(createNewsForm);
         news.setCategory(category);
         news.setUser(user);
+        if (StringUtils.isNoneBlank(createNewsForm.getThumbnailUrl())) {
+            mgrApiService.validateFile(createNewsForm.getThumbnailUrl());
+            news.setThumbnailUrl(createNewsForm.getThumbnailUrl());
+        } else {
+            news.setThumbnailUrl(null);
+        }
         if (createNewsForm.getTagIds() != null && !createNewsForm.getTagIds().isEmpty()) {
             List<Tag> tags = tagRepository.findAllById(createNewsForm.getTagIds());
             if (tags.size() != createNewsForm.getTagIds().size()) {
@@ -97,8 +103,10 @@ public class NewsController extends ABasicController {
         }
         news.setTitle(updateNewsForm.getTitle());
         news.setDescription(updateNewsForm.getDescription());
-        if (StringUtils.isNoneBlank(updateNewsForm.getThumbnailUrl())) {
-            if (news.getThumbnailUrl() != null && !news.getThumbnailUrl().equals(updateNewsForm.getThumbnailUrl())) {
+        if (StringUtils.isNoneBlank(updateNewsForm.getThumbnailUrl())
+                && !updateNewsForm.getThumbnailUrl().equals(news.getThumbnailUrl())) {
+            mgrApiService.validateFile(updateNewsForm.getThumbnailUrl());
+            if (StringUtils.isNoneBlank(news.getThumbnailUrl())) {
                 mgrApiService.deleteFile(news.getThumbnailUrl());
             }
             news.setThumbnailUrl(updateNewsForm.getThumbnailUrl());

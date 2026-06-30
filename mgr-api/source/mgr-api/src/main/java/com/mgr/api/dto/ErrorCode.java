@@ -92,4 +92,11 @@ public class ErrorCode {
      */
     public static final String DB_CONFIG_ERROR_NOT_FOUND = "ERROR-DBCONFIG-0000";
     public static final String DB_CONFIG_ERROR_NAME_EXISTED = "ERROR-DBCONFIG-0001";
+
+    /**
+     * File
+     */
+    public static final String FILE_ERROR_INVALID_PATH = "ERROR-FILE-0000";
+    public static final String FILE_ERROR_NOT_FOUND = "ERROR-FILE-0001";
+    public static final String FILE_ERROR_SYSTEM = "ERROR-FILE-0002";
 }

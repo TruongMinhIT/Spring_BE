@@ -10,14 +10,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.Cacheable;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,8 +48,10 @@ public class FileUploadController extends ABasicController {
         String kindStr;
         if (form.getKind() == MgrConstant.UPLOAD_FILE_AVATAR) {
             kindStr = MgrConstant.UPLOAD_FILE_AVATAR_STR;
-        } else {
+        } else if (form.getKind() == MgrConstant.UPLOAD_FILE_LOGO) {
             kindStr = MgrConstant.UPLOAD_FILE_LOGO_STR;
+        } else {
+            kindStr = MgrConstant.UPLOAD_FILE_IMAGE_THUMBNAIL_STR;
         }
 
         String randomStr = RandomStringUtils.randomNumeric(10).toUpperCase();
@@ -68,20 +71,33 @@ public class FileUploadController extends ABasicController {
         }
     }
 
-    @GetMapping("/download")
-    public ResponseEntity<Resource> downloadFile(@RequestParam String path) {
+    @GetMapping("/download/{folder}/{fileName:.+}")
+    @Cacheable("images")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String folder, @PathVariable String fileName) {
         try {
-            Path filePath = Paths.get(uploadDir, "general", path);
+            Path basePath = Paths.get(uploadDir, "general").toAbsolutePath().normalize();
+            Path filePath = basePath.resolve(Paths.get(folder, fileName)).normalize();
+            if (!filePath.startsWith(basePath)) {
+                log.error("Cảnh báo: Cố gắng tải file ngoài thư mục");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists() && resource.isReadable()) {
+                // Nhận diện "img/png, img/jpeg"
+                String contentType = Files.probeContentType(filePath);
+                if (contentType == null) {
+                    contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE; // mặc định là luồng nhị phân
+                }
                 return ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_OCTET_STREAM) // Báo dữ liệu kiểu nhị phân
+                        .header(HttpHeaders.CONTENT_TYPE, contentType)
                         // Yêu cầu browser tải với tên file gốc
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                         .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.notFound().build();
-        } catch (MalformedURLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
