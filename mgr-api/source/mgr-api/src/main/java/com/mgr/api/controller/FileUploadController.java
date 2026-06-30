@@ -73,9 +73,10 @@ public class FileUploadController extends ABasicController {
         try {
             Path filePath = Paths.get(uploadDir, "general", path);
             Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists() || resource.isReadable()) {
+            if (resource.exists() && resource.isReadable()) {
                 return ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM) // Báo dữ liệu kiểu nhị phân
+                        // Yêu cầu browser tải với tên file gốc
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                         .body(resource);
             }
