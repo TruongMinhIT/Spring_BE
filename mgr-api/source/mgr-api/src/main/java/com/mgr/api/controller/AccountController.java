@@ -81,6 +81,7 @@ public class AccountController extends ABasicController {
         account.setStatus(createAccountAdminForm.getStatus());
         account.setPhone(createAccountAdminForm.getPhone());
         if (StringUtils.isNoneBlank(createAccountAdminForm.getAvatarPath())) {
+            mgrApiService.validateFile(createAccountAdminForm.getAvatarPath());
             account.setAvatarPath(createAccountAdminForm.getAvatarPath());
         }
         accountRepository.save(account);
@@ -108,8 +109,10 @@ public class AccountController extends ABasicController {
             account.setPassword(passwordEncoder.encode(updateAccountAdminForm.getPassword()));
         }
         account.setFullName(updateAccountAdminForm.getFullName());
-        if (StringUtils.isNoneBlank(updateAccountAdminForm.getAvatarPath())) {
-            if (account.getAvatarPath() != null && !updateAccountAdminForm.getAvatarPath().equals(account.getAvatarPath())) {
+        if (StringUtils.isNoneBlank(updateAccountAdminForm.getAvatarPath())
+                && !updateAccountAdminForm.getAvatarPath().equals(account.getAvatarPath())) {
+            mgrApiService.validateFile(updateAccountAdminForm.getAvatarPath());
+            if (StringUtils.isNoneBlank(account.getAvatarPath())) {
                 //delete old image
                 mgrApiService.deleteFile(account.getAvatarPath());
             }
@@ -169,7 +172,15 @@ public class AccountController extends ABasicController {
         }
         account.setPhone(updateProfileAdminForm.getPhone());
         account.setFullName(updateProfileAdminForm.getFullName());
-        account.setAvatarPath(updateProfileAdminForm.getAvatarPath());
+        if (StringUtils.isNoneBlank(updateProfileAdminForm.getAvatarPath())
+                && !updateProfileAdminForm.getAvatarPath().equals(account.getAvatarPath())) {
+            mgrApiService.validateFile(updateProfileAdminForm.getAvatarPath());
+            if (StringUtils.isNoneBlank(account.getAvatarPath())) {
+                // delete old image
+                mgrApiService.deleteFile(account.getAvatarPath());
+            }
+            account.setAvatarPath(updateProfileAdminForm.getAvatarPath());
+        }
         accountRepository.save(account);
 
         apiMessageDto.setMessage("Update admin account success");

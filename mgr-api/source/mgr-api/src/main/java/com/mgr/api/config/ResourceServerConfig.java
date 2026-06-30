@@ -40,6 +40,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/index", "/pub/**", "/api/token", "/api/auth/pwd/verify-token",
                         "/api/auth/activate/resend", "/api/auth/pwd", "/api/auth/logout", "/actuator/**", "/api/auth/**").permitAll()
                 .antMatchers("/v1/account/request-forget-password", "/v1/account/forget-password","/v1/account/verify-credential").permitAll()
+                .antMatchers("/v1/file/download/**").permitAll()
                 .antMatchers("/**").authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());

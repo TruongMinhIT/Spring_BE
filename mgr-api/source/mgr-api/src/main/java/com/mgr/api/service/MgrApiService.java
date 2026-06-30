@@ -1,10 +1,19 @@
 package com.mgr.api.service;
 
+import com.mgr.api.dto.ErrorCode;
+import com.mgr.api.exception.BadRequestException;
 import com.mgr.api.model.Permission;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +28,83 @@ public class MgrApiService {
 
     private Map<String, Long> storeQRCodeRandom = new ConcurrentHashMap<>();
 
+    @Value("${upload.dir}")
+    private String uploadDir;
+
     public void deleteFile(String filePath) {
-        //call to mediaService for delete
+        if (filePath == null || filePath.trim().isEmpty()) {
+            return;
+        }
+        try {
+            String relativePath = filePath.startsWith("/") ? filePath.substring(1) : filePath;
+            Path basePath = Paths.get(uploadDir, "general").toAbsolutePath().normalize();
+            Path targetPath = basePath.resolve(relativePath).normalize();
+            if (!targetPath.startsWith(basePath)) {
+                log.warn("Cảnh báo: Cố tình xóa file ngoài thư mục: {}", targetPath);
+                return;
+            }
+            boolean deleted = Files.deleteIfExists(targetPath);
+            if (deleted) {
+                log.info("Đã xóa file cũ thành công: {}", targetPath);
+            }
+        } catch (Exception e) {
+            log.error("Không thể xóa file vật lý: {}", filePath, e);
+        }
     }
 
     public void deleteFiles(List<String> filePaths) {
-        // call to mediaService for delete
+        if (filePaths == null || filePaths.isEmpty()) {
+            return;
+        }
+        try {
+            Path basePath = Paths.get(uploadDir, "general").toAbsolutePath().normalize();
+            int deletedCount = 0;
+
+            for (String filePath : filePaths) {
+                if (StringUtils.isBlank(filePath)) continue;
+                try {
+                    String relativePath = filePath.startsWith("/") ? filePath.substring(1) : filePath;
+                    Path targetPath = basePath.resolve(relativePath).normalize();
+
+                    if (targetPath.startsWith(basePath)) {
+                        if (Files.deleteIfExists(targetPath)) {
+                            deletedCount++;
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Không thể xóa file: {}", filePath, e);
+                }
+            }
+            log.info("Đã dọn dẹp thành công {}/{} file rác.", deletedCount, filePaths.size());
+
+        } catch (Exception e) {
+            log.error("Lỗi cấu hình hệ thống: ", e);
+        }
+    }
+
+    public void validateFile(String filePath) {
+        if (StringUtils.isBlank(filePath)) {
+            return;
+        }
+        try {
+            String relativePath = filePath.startsWith("/") ? filePath.substring(1) : filePath;
+            Path basePath = Paths.get(uploadDir, "general").toAbsolutePath().normalize();
+            Path targetPath = basePath.resolve(relativePath).normalize();
+
+            if (!targetPath.startsWith(basePath)) {
+                throw new BadRequestException("Đường dẫn file không hợp lệ", ErrorCode.FILE_ERROR_INVALID_PATH);
+            }
+
+            Resource resource = new UrlResource(targetPath.toUri());
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new BadRequestException("File ảnh không tồn tại hoặc không thể đọc", ErrorCode.FILE_ERROR_NOT_FOUND);
+            }
+
+        } catch (BadRequestException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BadRequestException("Lỗi hệ thống khi xác minh file", ErrorCode.FILE_ERROR_NOT_FOUND);
+        }
     }
 
     public void sendEmail(String email, String msg, String subject, boolean html) {
