@@ -33,24 +33,28 @@ public class MqttConfig {
         return options;
     }
 
+    // Khi tạo kết nối mqtt spring sẽ gọi factory
     @Bean
     public MqttPahoClientFactory mqttClientFactory() {
         DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
-        factory.setConnectionOptions(mqttConnectOptions());
+        factory.setConnectionOptions(mqttConnectOptions()); // chèn cấu hình connection
         return factory;
     }
 
+    // Gửi publish message ra MQTT broker
     @Bean
     public MqttPahoMessageHandler mqttOutbound() {
         MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler("publisher-client-id", mqttClientFactory());
-        messageHandler.setAsync(true);
+        messageHandler.setAsync(true); // Gửi nhiều luồng publish sẽ không phải chờ confirm
         messageHandler.setDefaultTopic("default/topic");
         return messageHandler;
     }
 
+    // Kết nối Channel với Handler
     @Bean
-    @ServiceActivator(inputChannel = "mqttOutboundChannel")
+    @ServiceActivator(inputChannel = "mqttOutboundChannel") // Đăng kí channel lắng nghe trên channel có "mqttOutboundChannel"
     public MessageHandler mqttOutboundHandler() {
         return mqttOutbound();
     }
+    //Bất kỳ message nào được đẩy vào channel "mqttOutboundChannel" → sẽ được MqttPahoMessageHandler xử lý → publish ra MQTT
 }

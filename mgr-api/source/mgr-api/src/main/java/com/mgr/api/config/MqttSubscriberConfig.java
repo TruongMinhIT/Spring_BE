@@ -17,6 +17,7 @@ public class MqttSubscriberConfig {
         this.mqttPahoClientFactory = mqttPahoClientFactory;
     }
 
+    //	Nhận (subscribe) message từ MQTT Broker
     @Bean
     public MqttPahoMessageDrivenChannelAdapter inbound() {
         MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
