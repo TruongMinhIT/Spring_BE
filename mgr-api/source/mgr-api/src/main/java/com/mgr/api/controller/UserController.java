@@ -1,12 +1,18 @@
 package com.mgr.api.controller;
 
 import com.mgr.api.constant.MgrConstant;
+import com.mgr.api.constant.UserExportStatus;
 import com.mgr.api.dto.ApiMessageDto;
 import com.mgr.api.dto.ErrorCode;
 import com.mgr.api.dto.ResponseListDto;
 import com.mgr.api.dto.user.UserDto;
 import com.mgr.api.exception.BadRequestException;
 import com.mgr.api.exception.NotFoundException;
+import com.mgr.api.exception.UnauthorizationException;
+import com.mgr.api.jwt.MgrJwt;
+import com.mgr.api.service.UserExportService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import com.mgr.api.form.user.CreateUserForm;
 import com.mgr.api.form.user.UpdateUserForm;
 import com.mgr.api.form.user.UpdateUserProfileForm;
@@ -34,8 +40,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,6 +77,9 @@ public class UserController extends ABasicController{
 
     @Autowired
     private NewsRepository newsRepository;
+
+    @Autowired
+    private UserExportService userExportService;
 
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USE_V')")
@@ -194,6 +207,40 @@ public class UserController extends ABasicController{
         }
         userRepository.delete(user);
         return makeSuccessResponse("Delete user profile success.");
+    }
+
+    @ApiOperation(value = "Export tenant users as CSV",
+            notes = "ADMIN only. Streams a text/csv download of the current tenant's users "
+                    + "(UTF-8 with BOM, Vietnamese headers). Optional status filter: active|locked.")
+    @GetMapping(value = "/export", produces = "text/csv")
+    @PreAuthorize("isAuthenticated()")
+    public void exportUsers(
+            @ApiParam(value = "Filter by account status", allowableValues = "active,locked")
+            @RequestParam(name = "status", required = false) String status,
+            HttpServletResponse response) throws IOException {
+        // Authorize before writing any byte so failures render through the global @ControllerAdvice
+        // in the standard ApiMessageDto envelope (FR-009, FR-010).
+        MgrJwt session = getSessionFromToken();
+        boolean isAdmin = session != null
+                && (Boolean.TRUE.equals(session.getIsSuperAdmin())
+                    || MgrConstant.USER_KIND_ADMIN.equals(session.getUserKind()));
+        if (!isAdmin) {
+            throw new UnauthorizationException("Only administrators can export users");
+        }
+
+        // Resolve and validate the optional status filter before writing (FR-011).
+        UserExportStatus statusFilter;
+        try {
+            statusFilter = UserExportStatus.fromRequestValue(status).orElse(null);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException(e.getMessage(), ErrorCode.USER_ERROR_INVALID_EXPORT_STATUS);
+        }
+
+        String fileName = "users-export-" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".csv";
+        response.setContentType("text/csv; charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+        userExportService.writeUsersCsv(statusFilter, response.getOutputStream());
     }
 
     @GetMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
