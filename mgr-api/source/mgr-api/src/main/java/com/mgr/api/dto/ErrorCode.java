@@ -93,4 +93,9 @@ public class ErrorCode {
      */
     public static final String DB_CONFIG_ERROR_NOT_FOUND = "ERROR-DBCONFIG-0000";
     public static final String DB_CONFIG_ERROR_NAME_EXISTED = "ERROR-DBCONFIG-0001";
+
+    /**
+     * FitnessExercise
+     */
+    public static final String FITNESS_EXERCISE_ERROR_NOT_FOUND = "ERROR-FITNESS-EXERCISE-0000";
 }

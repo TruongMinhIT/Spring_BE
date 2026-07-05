@@ -1,0 +1,165 @@
+openapi: 3.0.1
+info:
+  title: Fitness Exercise Catalog API
+  version: "1.0"
+  description: >
+    CRUD endpoints for the FitnessExercise catalog in mgr-api. Every response is
+    wrapped in the standard ApiMessageDto envelope. All endpoints are secured via
+    @PreAuthorize with a distinct role per operation.
+servers:
+  - url: /v1/fitness-exercise
+paths:
+  /get/{id}:
+    get:
+      summary: Get one exercise by identifier (not status-restricted)
+      security: [{ hasRole: [EXERCISE_V] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        "200":
+          description: Success (or NOT_FOUND error in envelope)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiMessageDto_FitnessExerciseDto" }
+  /list:
+    get:
+      summary: Paginated list; name (contains) filter; ACTIVE only
+      security: [{ hasRole: [EXERCISE_L] }]
+      parameters:
+        - name: name
+          in: query
+          required: false
+          schema: { type: string }
+          description: Case-insensitive partial match on exercise name
+        - name: page
+          in: query
+          schema: { type: integer, default: 0 }
+        - name: size
+          in: query
+          schema: { type: integer, default: 10 }
+        - name: sort
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Paginated active exercises in envelope
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiMessageDto_ResponseListDto" }
+  /create:
+    post:
+      summary: Create a new exercise
+      security: [{ hasRole: [EXERCISE_C] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateFitnessExerciseForm" }
+      responses:
+        "200":
+          description: Created (or validation error in envelope)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiMessageDto_String" }
+  /update:
+    put:
+      summary: Update an existing exercise
+      security: [{ hasRole: [EXERCISE_U] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateFitnessExerciseForm" }
+      responses:
+        "200":
+          description: Updated (or NOT_FOUND / validation error in envelope)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiMessageDto_String" }
+  /delete/{id}:
+    delete:
+      summary: Hard-delete an exercise
+      security: [{ hasRole: [EXERCISE_D] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        "200":
+          description: Deleted (or NOT_FOUND error in envelope)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiMessageDto_Void" }
+components:
+  schemas:
+    DifficultyLevel:
+      type: integer
+      enum: [1, 2, 3]
+      description: 1=Beginner, 2=Intermediate, 3=Advanced
+    CreateFitnessExerciseForm:
+      type: object
+      required: [name, targetMuscleGroup, difficultyLevel, instructions]
+      properties:
+        name: { type: string, maxLength: 255 }
+        targetMuscleGroup: { type: string, maxLength: 255 }
+        difficultyLevel: { $ref: "#/components/schemas/DifficultyLevel" }
+        instructions: { type: string, maxLength: 2000 }
+    UpdateFitnessExerciseForm:
+      type: object
+      required: [id, name, targetMuscleGroup, difficultyLevel, instructions]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string, maxLength: 255 }
+        targetMuscleGroup: { type: string, maxLength: 255 }
+        difficultyLevel: { $ref: "#/components/schemas/DifficultyLevel" }
+        instructions: { type: string, maxLength: 2000 }
+    FitnessExerciseDto:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        targetMuscleGroup: { type: string }
+        difficultyLevel: { $ref: "#/components/schemas/DifficultyLevel" }
+        instructions: { type: string }
+        status: { type: integer }
+        createdDate: { type: string, format: date-time }
+        modifiedDate: { type: string, format: date-time }
+    ApiMessageDto_FitnessExerciseDto:
+      type: object
+      properties:
+        result: { type: boolean }
+        code: { type: string, nullable: true }
+        message: { type: string }
+        data: { $ref: "#/components/schemas/FitnessExerciseDto" }
+    ApiMessageDto_ResponseListDto:
+      type: object
+      properties:
+        result: { type: boolean }
+        code: { type: string, nullable: true }
+        message: { type: string }
+        data:
+          type: object
+          properties:
+            content:
+              type: array
+              items: { $ref: "#/components/schemas/FitnessExerciseDto" }
+            totalElements: { type: integer, format: int64 }
+            totalPages: { type: integer }
+    ApiMessageDto_String:
+      type: object
+      properties:
+        result: { type: boolean }
+        code: { type: string, nullable: true }
+        message: { type: string }
+        data: { type: string, nullable: true }
+    ApiMessageDto_Void:
+      type: object
+      properties:
+        result: { type: boolean }
+        code: { type: string, nullable: true }
+        message: { type: string }
+        data: { nullable: true }

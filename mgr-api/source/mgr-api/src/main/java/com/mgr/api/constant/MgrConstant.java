@@ -28,6 +28,10 @@ public class MgrConstant {
     public static final int NATION_TYPE_DISTRICT = 2;
     public static final int NATION_TYPE_COMMUNE = 3;
 
+    public static final int DIFFICULTY_LEVEL_BEGINNER = 1;
+    public static final int DIFFICULTY_LEVEL_INTERMEDIATE = 2;
+    public static final int DIFFICULTY_LEVEL_ADVANCED = 3;
+
     private MgrConstant() {
         throw new IllegalStateException("Utility class");
     }
